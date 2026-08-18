@@ -89,6 +89,48 @@ export async function deleteSubject(id) {
   }
 }
 
+export async function fetchTeachers() {
+  const { data, error } = await supabase
+    .from('teachers')
+    .select(`
+      *,
+      teacher_class_assignments (
+        class_id,
+        classes (
+          name
+        )
+      )
+    `)
+    .order('full_name')
+  
+  if (error) throw new Error(error.message)
+  return data
+}
+
+export async function assignTeacherToClasses(teacherId, classIds) {
+  // First, delete existing assignments for this teacher
+  const { error: deleteError } = await supabase
+    .from('teacher_class_assignments')
+    .delete()
+    .eq('teacher_id', teacherId)
+  
+  if (deleteError) throw new Error(deleteError.message)
+
+  // If there are classes to assign, insert them
+  if (classIds && classIds.length > 0) {
+    const payloads = classIds.map(classId => ({
+      teacher_id: teacherId,
+      class_id: classId
+    }))
+
+    const { error: insertError } = await supabase
+      .from('teacher_class_assignments')
+      .insert(payloads)
+    
+    if (insertError) throw new Error(insertError.message)
+  }
+}
+
 export async function fetchStudents(searchQuery = '', classId = '') {
   let query = supabase
     .from('students')

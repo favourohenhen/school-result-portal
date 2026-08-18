@@ -21,6 +21,7 @@ import AdminDashboard  from './pages/admin/Dashboard'
 import AdminStudents   from './pages/admin/Students'
 import AdminClasses    from './pages/admin/Classes'
 import AdminSubjects   from './pages/admin/Subjects'
+import AdminTeachers   from './pages/admin/Teachers'
 import TeacherDashboard from './pages/teacher/Dashboard'
 import StudentDashboard from './pages/student/Dashboard'
 
@@ -41,6 +42,7 @@ export default function App() {
             <Route path="/admin/students"    element={<AdminStudents />} />
             <Route path="/admin/classes"     element={<AdminClasses />} />
             <Route path="/admin/subjects"    element={<AdminSubjects />} />
+            <Route path="/admin/teachers"    element={<AdminTeachers />} />
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
 
             {/* Redirect root and unknown paths to student login */}
