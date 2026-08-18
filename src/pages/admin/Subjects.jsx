@@ -80,7 +80,15 @@ export default function AdminSubjects() {
               {loading ? (
                 <tr><td colSpan="3" style={{ padding: 24, textAlign: 'center' }}>Loading...</td></tr>
               ) : subjects.length === 0 ? (
-                <tr><td colSpan="3" style={{ padding: 24, textAlign: 'center', color: 'var(--text-secondary)' }}>No subjects found.</td></tr>
+                <tr>
+                  <td colSpan="3" style={{ padding: 0 }}>
+                    <div className="empty-state">
+                      <div className="empty-state__icon">📖</div>
+                      <h3>No subjects found</h3>
+                      <p>You haven't added any subjects yet. Click the button above to create one.</p>
+                    </div>
+                  </td>
+                </tr>
               ) : (
                 subjects.map(s => (
                   <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>

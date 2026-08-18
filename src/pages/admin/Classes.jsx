@@ -80,7 +80,15 @@ export default function AdminClasses() {
               {loading ? (
                 <tr><td colSpan="3" style={{ padding: 24, textAlign: 'center' }}>Loading...</td></tr>
               ) : classes.length === 0 ? (
-                <tr><td colSpan="3" style={{ padding: 24, textAlign: 'center', color: 'var(--text-secondary)' }}>No classes found.</td></tr>
+                <tr>
+                  <td colSpan="3" style={{ padding: 0 }}>
+                    <div className="empty-state">
+                      <div className="empty-state__icon">🏫</div>
+                      <h3>No classes found</h3>
+                      <p>You haven't added any classes yet. Click the button above to create your first class.</p>
+                    </div>
+                  </td>
+                </tr>
               ) : (
                 classes.map(c => (
                   <tr key={c.id} style={{ borderBottom: '1px solid var(--border-color)' }}>

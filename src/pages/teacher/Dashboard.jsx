@@ -10,16 +10,13 @@ export default function TeacherDashboard() {
   const { session } = useAuth()
   
   const [classes, setClasses] = useState([])
-  const [loadingClasses, setLoadingClasses] = useState(true)
-  
-  const [selectedClass, setSelectedClass] = useState(null)
-  const [students, setStudents] = useState([])
-  const [loadingStudents, setLoadingStudents] = useState(false)
+  const [classStats, setClassStats] = useState({}) // classId -> student count
+  const [loading, setLoading] = useState(true)
 
   // Protect route
   useEffect(() => {
     if (!session || session.role !== 'teacher') {
-      navigate('/teacher/login', { replace: true })
+      navigate('/admin/login', { replace: true })
     } else {
       loadClasses()
     }
@@ -29,23 +26,19 @@ export default function TeacherDashboard() {
     try {
       const data = await fetchAssignedClasses()
       setClasses(data)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoadingClasses(false)
-    }
-  }
+      
+      // Fetch student count for each class to show on dashboard
+      const stats = {}
+      for (const cls of data) {
+        const students = await fetchStudentsByClass(cls.id)
+        stats[cls.id] = students.length
+      }
+      setClassStats(stats)
 
-  async function handleClassSelect(cls) {
-    setSelectedClass(cls)
-    setLoadingStudents(true)
-    try {
-      const data = await fetchStudentsByClass(cls.id)
-      setStudents(data)
     } catch (err) {
       console.error(err)
     } finally {
-      setLoadingStudents(false)
+      setLoading(false)
     }
   }
 
@@ -55,89 +48,48 @@ export default function TeacherDashboard() {
     <Layout role="teacher" sidebar pageTitle="Dashboard">
 
       <div className="page-header">
-        <h2 className="page-title">My Classes</h2>
-        <p className="page-subtitle">Select an assigned class to view your students.</p>
+        <h2 className="page-title">Welcome back!</h2>
+        <p className="page-subtitle">Here is a quick overview of your assigned classes.</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, alignItems: 'start' }}>
         
-        {/* Left Column: Classes */}
-        <Card>
-          <Card.Header>
-            <Card.Title>Assigned Classes</Card.Title>
-          </Card.Header>
-          <div style={{ padding: 24 }}>
-            {loadingClasses ? (
-              <p>Loading your classes...</p>
-            ) : classes.length === 0 ? (
-              <p style={{ color: 'var(--text-secondary)' }}>You have not been assigned to any classes yet.</p>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {classes.map(cls => (
-                  <button 
-                    key={cls.id}
-                    onClick={() => handleClassSelect(cls)}
-                    style={{
-                      padding: '16px',
-                      borderRadius: 12,
-                      border: selectedClass?.id === cls.id ? '2px solid var(--primary-color)' : '1px solid var(--border-color)',
-                      backgroundColor: selectedClass?.id === cls.id ? 'rgba(26, 115, 232, 0.05)' : 'white',
-                      textAlign: 'left',
-                      cursor: 'pointer',
-                      fontWeight: 500,
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    {cls.name}
-                  </button>
-                ))}
+        {loading ? (
+          <p>Loading your dashboard...</p>
+        ) : classes.length === 0 ? (
+          <div style={{ gridColumn: '1 / -1' }}>
+            <Card>
+              <div className="empty-state" style={{ padding: 48 }}>
+                <div className="empty-state__icon">🏫</div>
+                <h3>No Classes Assigned</h3>
+                <p>You have not been assigned to any classes yet. Please contact the administrator.</p>
               </div>
-            )}
+            </Card>
           </div>
-        </Card>
-
-        {/* Right Column: Students */}
-        <Card>
-          <Card.Header>
-            <Card.Title>
-              {selectedClass ? `Students in ${selectedClass.name}` : 'Student List'}
-            </Card.Title>
-          </Card.Header>
-          
-          {!selectedClass ? (
-            <div style={{ padding: 48, textAlign: 'center', color: 'var(--text-secondary)' }}>
-              👈 Select a class from the left to view students.
-            </div>
-          ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
-                    <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Student Name</th>
-                    <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Exam No.</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loadingStudents ? (
-                    <tr><td colSpan="2" style={{ padding: 24, textAlign: 'center' }}>Loading students...</td></tr>
-                  ) : students.length === 0 ? (
-                    <tr><td colSpan="2" style={{ padding: 24, textAlign: 'center', color: 'var(--text-secondary)' }}>No students in this class.</td></tr>
-                  ) : (
-                    students.map(s => (
-                      <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                        <td style={{ padding: '16px 24px', fontWeight: 600 }}>{s.full_name}</td>
-                        <td style={{ padding: '16px 24px', fontFamily: 'monospace' }}>{s.examination_number}</td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </Card>
+        ) : (
+          classes.map(cls => (
+            <Card key={cls.id} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <div style={{ padding: 24, flex: 1 }}>
+                <div style={{ fontSize: 40, marginBottom: 16 }}>📚</div>
+                <h3 style={{ margin: '0 0 8px 0', fontSize: 24, color: 'var(--text-primary)' }}>{cls.name}</h3>
+                <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
+                  {classStats[cls.id] !== undefined ? `${classStats[cls.id]} Students Registered` : 'Loading students...'}
+                </p>
+              </div>
+              <div style={{ padding: '16px 24px', backgroundColor: 'rgba(0,0,0,0.02)', borderTop: '1px solid var(--border-color)' }}>
+                <button 
+                  className="btn btn--primary" 
+                  style={{ width: '100%' }}
+                  onClick={() => navigate(`/teacher/classes?classId=${cls.id}`)}
+                >
+                  View Full Class →
+                </button>
+              </div>
+            </Card>
+          ))
+        )}
 
       </div>
-
     </Layout>
   )
 }

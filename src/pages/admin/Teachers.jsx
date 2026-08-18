@@ -89,7 +89,15 @@ export default function AdminTeachers() {
               {loading ? (
                 <tr><td colSpan="3" style={{ padding: 24, textAlign: 'center' }}>Loading...</td></tr>
               ) : teachers.length === 0 ? (
-                <tr><td colSpan="3" style={{ padding: 24, textAlign: 'center', color: 'var(--text-secondary)' }}>No teachers found.</td></tr>
+                <tr>
+                  <td colSpan="3" style={{ padding: 0 }}>
+                    <div className="empty-state">
+                      <div className="empty-state__icon">👨‍🏫</div>
+                      <h3>No teachers registered</h3>
+                      <p>Currently, there are no teachers registered in the system.</p>
+                    </div>
+                  </td>
+                </tr>
               ) : (
                 teachers.map(t => (
                   <tr key={t.id} style={{ borderBottom: '1px solid var(--border-color)' }}>

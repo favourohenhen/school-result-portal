@@ -174,6 +174,35 @@ export async function fetchStudents(searchQuery = '', classId = '') {
   return data
 }
 
+export async function fetchStudentById(studentId) {
+  const { data, error } = await supabase
+    .from('students')
+    .select(`
+      id, full_name, examination_number,
+      classes ( id, name )
+    `)
+    .eq('id', studentId)
+    .single()
+    
+  if (error) throw new Error(error.message)
+  return data
+}
+
+export async function fetchStudentResults(studentId, session, term) {
+  const { data, error } = await supabase
+    .from('results')
+    .select(`
+      id, score, term, session,
+      subjects ( name )
+    `)
+    .eq('student_id', studentId)
+    .eq('session', session)
+    .eq('term', term)
+    
+  if (error) throw new Error(error.message)
+  return data
+}
+
 export async function createStudent(studentData) {
   // Hash the DOB directly as the student's permanent PIN
   const code_hash = await hashPin(studentData.dob)

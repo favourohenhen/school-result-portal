@@ -169,7 +169,15 @@ export default function AdminStudents() {
               {loading ? (
                 <tr><td colSpan="5" style={{ padding: 24, textAlign: 'center' }}>Loading...</td></tr>
               ) : students.length === 0 ? (
-                <tr><td colSpan="5" style={{ padding: 24, textAlign: 'center', color: 'var(--text-secondary)' }}>No students found.</td></tr>
+                <tr>
+                  <td colSpan="5" style={{ padding: 0 }}>
+                    <div className="empty-state">
+                      <div className="empty-state__icon">👥</div>
+                      <h3>No students found</h3>
+                      <p>We couldn't find any students matching your criteria.</p>
+                    </div>
+                  </td>
+                </tr>
               ) : (
                 students.map(s => (
                   <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>

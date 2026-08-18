@@ -17,12 +17,9 @@ import { useAuth } from '../context/AuthContext'
 /* ── Nav definitions ──────────────────────────────────────────── */
 const NAV = {
   admin: [
-    { icon: '📊', label: 'Dashboard',  to: '/admin/dashboard' },
-    { icon: '👥', label: 'Students',   to: '/admin/students'  },
-    { icon: '👨‍🏫', label: 'Teachers', to: '/admin/teachers'  },
-    { icon: '🏫', label: 'Classes',    to: '/admin/classes'   },
-    { icon: '📖', label: 'Subjects',   to: '/admin/subjects'  },
-    { icon: '📝', label: 'Results',    to: '/admin/results'   },
+    { icon: '📊', label: 'Dashboard',     to: '/admin/dashboard' },
+    { icon: '👥', label: 'Students',      to: '/admin/students'  },
+    { icon: '📝', label: 'Record Result', to: '/admin/results'   },
   ],
   teacher: [
     { icon: '📊', label: 'Dashboard',     to: '/teacher/dashboard' },
@@ -113,7 +110,7 @@ function SidebarLayout({ children, role, pageTitle }) {
 
         {/* Topbar */}
         <div className="sidebar-topbar">
-          <div className="sidebar-topbar__left">
+          <div className="sidebar-topbar__left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button
               className="sidebar-toggle-btn"
               onClick={() => setOpen(o => !o)}
@@ -122,6 +119,25 @@ function SidebarLayout({ children, role, pageTitle }) {
               aria-label="Toggle navigation"
             >
               ☰
+            </button>
+            <button 
+              onClick={() => navigate(-1)} 
+              style={{ 
+                background: 'transparent', 
+                border: 'none', 
+                cursor: 'pointer', 
+                fontSize: '18px',
+                padding: '4px 8px',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--text-secondary)'
+              }}
+              title="Go Back"
+              aria-label="Go Back"
+            >
+              ←
             </button>
             <span className="sidebar-topbar__title">
               {pageTitle || 'School Result Portal'}
@@ -157,10 +173,30 @@ function HeaderLayout({ children, role }) {
       <header className="site-header" role="banner">
         <div className="container">
           <div className="site-header__inner">
-            <Link to="/student/dashboard" className="site-header__brand" aria-label="School Result Portal">
-              <div className="site-header__logo" aria-hidden="true">📚</div>
-              <span className="site-header__name">School Result Portal</span>
-            </Link>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <button 
+                onClick={() => navigate(-1)} 
+                style={{ 
+                  background: 'rgba(255,255,255,0.1)', 
+                  border: 'none', 
+                  cursor: 'pointer', 
+                  fontSize: '18px',
+                  padding: '4px 8px',
+                  borderRadius: '8px',
+                  color: 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                title="Go Back"
+              >
+                ←
+              </button>
+              <Link to="/student/dashboard" className="site-header__brand" aria-label="School Result Portal">
+                <div className="site-header__logo" aria-hidden="true">📚</div>
+                <span className="site-header__name">School Result Portal</span>
+              </Link>
+            </div>
 
             <nav className="site-header__nav" aria-label="Navigation">
               {items.map(item => (
