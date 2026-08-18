@@ -17,17 +17,18 @@ export async function fetchClasses() {
 
 export async function fetchDashboardStats() {
   // Run count queries in parallel
-  const [studentsRes, classesRes, subjectsRes] = await Promise.all([
+  const [studentsRes, classesRes, subjectsRes, resultsRes] = await Promise.all([
     supabase.from('students').select('*', { count: 'exact', head: true }),
     supabase.from('classes').select('*', { count: 'exact', head: true }),
-    supabase.from('subjects').select('*', { count: 'exact', head: true })
+    supabase.from('subjects').select('*', { count: 'exact', head: true }),
+    supabase.from('results').select('*', { count: 'exact', head: true })
   ])
 
   return {
     students: studentsRes.count || 0,
     classes: classesRes.count || 0,
     subjects: subjectsRes.count || 0,
-    results: 0 // Will implement in Phase 7
+    results: resultsRes.count || 0
   }
 }
 
@@ -129,6 +130,26 @@ export async function assignTeacherToClasses(teacherId, classIds) {
     
     if (insertError) throw new Error(insertError.message)
   }
+}
+
+export async function fetchAllResults({ classId, studentId, term, session }) {
+  let query = supabase
+    .from('results')
+    .select(`
+      id, score, term, session,
+      subjects ( name ),
+      students!inner ( full_name, examination_number, class_id, classes(name) )
+    `)
+    .order('created_at', { ascending: false })
+
+  if (term) query = query.eq('term', term)
+  if (session) query = query.eq('session', session)
+  if (studentId) query = query.eq('student_id', studentId)
+  if (classId) query = query.eq('students.class_id', classId)
+
+  const { data, error } = await query
+  if (error) throw new Error(error.message)
+  return data
 }
 
 export async function fetchStudents(searchQuery = '', classId = '') {

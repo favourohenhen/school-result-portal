@@ -22,7 +22,9 @@ import AdminStudents   from './pages/admin/Students'
 import AdminClasses    from './pages/admin/Classes'
 import AdminSubjects   from './pages/admin/Subjects'
 import AdminTeachers   from './pages/admin/Teachers'
+import AdminResults    from './pages/admin/Results'
 import TeacherDashboard from './pages/teacher/Dashboard'
+import TeacherResults  from './pages/teacher/Results'
 import StudentDashboard from './pages/student/Dashboard'
 
 export default function App() {
@@ -43,7 +45,10 @@ export default function App() {
             <Route path="/admin/classes"     element={<AdminClasses />} />
             <Route path="/admin/subjects"    element={<AdminSubjects />} />
             <Route path="/admin/teachers"    element={<AdminTeachers />} />
+            <Route path="/admin/results"     element={<AdminResults />} />
+            
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+            <Route path="/teacher/results"   element={<TeacherResults />} />
 
             {/* Redirect root and unknown paths to student login */}
             <Route path="/" element={<Navigate to="/login" replace />} />
