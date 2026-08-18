@@ -11,11 +11,22 @@ import { supabase } from '../lib/supabase'
 
 const SESSION_KEY = 'portal_student_session'
 
+// Utility: Securely hash a PIN client-side using SHA-256
+export async function hashPin(pin) {
+  const msgUint8 = new TextEncoder().encode(pin)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
 export async function loginStudent(examNumber, pin) {
+  // Hash the PIN before it even leaves the browser!
+  const hashedPin = await hashPin(pin)
+
   // Call the secure RPC function inside Supabase
   const { data, error } = await supabase.rpc('verify_student_login', {
     p_exam_number: examNumber,
-    p_code: pin
+    p_code: hashedPin
   })
 
   // Handle network or RPC errors

@@ -18,6 +18,7 @@ import Login           from './pages/Login'
 import AdminLogin      from './pages/AdminLogin'
 import TeacherLogin    from './pages/TeacherLogin'
 import AdminDashboard  from './pages/admin/Dashboard'
+import AdminStudents   from './pages/admin/Students'
 import TeacherDashboard from './pages/teacher/Dashboard'
 import StudentDashboard from './pages/student/Dashboard'
 
@@ -35,6 +36,7 @@ export default function App() {
             <Route path="/admin/login"       element={<AdminLogin />} />
             <Route path="/teacher/login"     element={<TeacherLogin />} />
             <Route path="/admin/dashboard"   element={<AdminDashboard />} />
+            <Route path="/admin/students"    element={<AdminStudents />} />
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
 
             {/* Redirect root and unknown paths to student login */}
