@@ -15,6 +15,80 @@ export async function fetchClasses() {
   return data
 }
 
+export async function fetchDashboardStats() {
+  // Run count queries in parallel
+  const [studentsRes, classesRes, subjectsRes] = await Promise.all([
+    supabase.from('students').select('*', { count: 'exact', head: true }),
+    supabase.from('classes').select('*', { count: 'exact', head: true }),
+    supabase.from('subjects').select('*', { count: 'exact', head: true })
+  ])
+
+  return {
+    students: studentsRes.count || 0,
+    classes: classesRes.count || 0,
+    subjects: subjectsRes.count || 0,
+    results: 0 // Will implement in Phase 7
+  }
+}
+
+export async function createClass(name) {
+  const { data, error } = await supabase
+    .from('classes')
+    .insert([{ name }])
+    .select()
+    .single()
+
+  if (error) {
+    if (error.code === '23505') throw new Error('This class already exists.')
+    throw new Error(error.message)
+  }
+  return data
+}
+
+export async function fetchSubjects() {
+  const { data, error } = await supabase
+    .from('subjects')
+    .select('*')
+    .order('name')
+  
+  if (error) throw new Error(error.message)
+  return data
+}
+
+export async function createSubject(name) {
+  const { data, error } = await supabase
+    .from('subjects')
+    .insert([{ name }])
+    .select()
+    .single()
+
+  if (error) {
+    if (error.code === '23505') throw new Error('This subject already exists.')
+    throw new Error(error.message)
+  }
+  return data
+}
+
+export async function deleteClass(id) {
+  const { error } = await supabase.from('classes').delete().eq('id', id)
+  if (error) {
+    if (error.code === '23503') {
+      throw new Error('Cannot delete this class because there are students assigned to it.')
+    }
+    throw new Error(error.message)
+  }
+}
+
+export async function deleteSubject(id) {
+  const { error } = await supabase.from('subjects').delete().eq('id', id)
+  if (error) {
+    if (error.code === '23503') {
+      throw new Error('Cannot delete this subject because it is already being used.')
+    }
+    throw new Error(error.message)
+  }
+}
+
 export async function fetchStudents(searchQuery = '', classId = '') {
   let query = supabase
     .from('students')
@@ -37,20 +111,9 @@ export async function fetchStudents(searchQuery = '', classId = '') {
   return data
 }
 
-function generatePin() {
-  return Math.floor(100000 + Math.random() * 900000).toString()
-}
-
-export async function createStudent(studentData, enablePin) {
-  let pinPlaintext = null
-  let code_hash = null
-  let code_status = 'inactive'
-
-  if (enablePin) {
-    pinPlaintext = generatePin()
-    code_hash = await hashPin(pinPlaintext)
-    code_status = 'active'
-  }
+export async function createStudent(studentData) {
+  // Hash the DOB directly as the student's permanent PIN
+  const code_hash = await hashPin(studentData.dob)
 
   const { data, error } = await supabase
     .from('students')
@@ -59,8 +122,8 @@ export async function createStudent(studentData, enablePin) {
       examination_number: studentData.examNumber,
       phone_number: studentData.phone || null,
       class_id: studentData.classId,
-      code_hash,
-      code_status
+      code_hash: code_hash,
+      code_status: 'active'
     }])
     .select()
     .single()
@@ -72,21 +135,28 @@ export async function createStudent(studentData, enablePin) {
     throw new Error(error.message)
   }
 
-  return { student: data, generatedPin: pinPlaintext }
+  return { student: data }
 }
 
-export async function resetStudentPin(studentId) {
-  const pinPlaintext = generatePin()
-  const code_hash = await hashPin(pinPlaintext)
-
+export async function updateStudent(studentId, studentData) {
   const { data, error } = await supabase
     .from('students')
-    .update({ code_hash, code_status: 'active' })
+    .update({
+      full_name: studentData.fullName,
+      examination_number: studentData.examNumber,
+      phone_number: studentData.phone || null,
+      class_id: studentData.classId,
+    })
     .eq('id', studentId)
-    .select('full_name')
+    .select()
     .single()
 
-  if (error) throw new Error(error.message)
-
-  return { studentName: data.full_name, newPin: pinPlaintext }
+  if (error) {
+    if (error.code === '23505') { // Postgres unique violation error code
+      throw new Error('This Examination Number already exists.')
+    }
+    throw new Error(error.message)
+  }
+  
+  return { student: data }
 }

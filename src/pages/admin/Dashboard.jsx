@@ -2,24 +2,41 @@
  * Page: Admin Dashboard  /admin/dashboard
  * Stat data fetched from Supabase in Phase 4.
  */
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Layout  } from '../../components/Layout'
 import { Card    } from '../../components/Card'
 import { StatCard } from '../../components/Card'
 import { Button  } from '../../components/Button'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { fetchDashboardStats } from '../../services/admin'
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
   const { session } = useAuth()
+  
+  const [stats, setStats] = useState({ students: 0, classes: 0, subjects: 0, results: 0 })
+  const [loading, setLoading] = useState(true)
 
   // Protect route
   useEffect(() => {
     if (!session || session.role !== 'admin') {
       navigate('/admin/login', { replace: true })
+    } else {
+      loadStats()
     }
   }, [session, navigate])
+
+  async function loadStats() {
+    try {
+      const data = await fetchDashboardStats()
+      setStats(data)
+    } catch (err) {
+      console.error("Error loading stats:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (!session || session.role !== 'admin') return null
 
@@ -33,10 +50,10 @@ export default function AdminDashboard() {
 
       {/* Stats */}
       <div className="stats-grid">
-        <StatCard icon="👥" label="Total Students"   value="—" id="stat-students" />
-        <StatCard icon="🏫" label="Classes"          value="—" id="stat-classes"  />
-        <StatCard icon="📖" label="Subjects"         value="—" id="stat-subjects" />
-        <StatCard icon="📝" label="Results Recorded" value="—" id="stat-results"  />
+        <StatCard icon="👥" label="Total Students"   value={loading ? "..." : stats.students} id="stat-students" />
+        <StatCard icon="🏫" label="Classes"          value={loading ? "..." : stats.classes}  id="stat-classes"  />
+        <StatCard icon="📖" label="Subjects"         value={loading ? "..." : stats.subjects} id="stat-subjects" />
+        <StatCard icon="📝" label="Results Recorded" value={loading ? "..." : stats.results}  id="stat-results"  />
       </div>
 
       {/* Quick actions */}
@@ -50,16 +67,11 @@ export default function AdminDashboard() {
         <Card.Body>
           <div className="flex flex-wrap gap-3">
             <Button size="sm" onClick={() => navigate('/admin/students')}>+ Add Student</Button>
-            <Button size="sm" variant="secondary" onClick={() => navigate('/admin/teachers')}>+ Add Teacher</Button>
             <Button size="sm" variant="secondary" onClick={() => navigate('/admin/classes')}>+ Add Class</Button>
             <Button size="sm" variant="secondary" onClick={() => navigate('/admin/subjects')}>+ Add Subject</Button>
           </div>
         </Card.Body>
       </Card>
-
-      <div className="alert alert--warning mt-6" role="note">
-        ⚠ Dashboard statistics will load from Supabase in Phase 4.
-      </div>
 
     </Layout>
   )

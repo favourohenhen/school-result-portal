@@ -3,7 +3,7 @@ import { Layout } from '../../components/Layout'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
-import { fetchClasses, fetchStudents, createStudent, resetStudentPin } from '../../services/admin'
+import { fetchClasses, fetchStudents, createStudent, updateStudent } from '../../services/admin'
 
 export default function AdminStudents() {
   // Data state
@@ -16,11 +16,12 @@ export default function AdminStudents() {
   const [filterClass, setFilterClass] = useState('')
 
   // Modal states
-  const [isAdding, setIsAdding] = useState(false)
-  const [pinReveal, setPinReveal] = useState(null) // { name, pin }
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingId, setEditingId] = useState(null)
 
   // Form state
-  const [formData, setFormData] = useState({ fullName: '', examNumber: '', phone: '', classId: '', enablePin: true })
+  const defaultForm = { firstName: '', middleName: '', lastName: '', examNumber: '', phone: '', classId: '', dob: '' }
+  const [formData, setFormData] = useState(defaultForm)
   const [formError, setFormError] = useState('')
   const [formLoading, setFormLoading] = useState(false)
 
@@ -54,40 +55,75 @@ export default function AdminStudents() {
     }
   }
 
-  async function handleAddSubmit(e) {
+  function handleAddClick() {
+    setEditingId(null)
+    setFormData(defaultForm)
+    setFormError('')
+    setIsModalOpen(true)
+  }
+
+  function handleEditClick(student) {
+    setEditingId(student.id)
+    
+    // Heuristically split the full name into parts for the edit form
+    const parts = student.full_name.split(' ')
+    const firstName = parts[0] || ''
+    const lastName = parts.length > 1 ? parts[parts.length - 1] : ''
+    const middleName = parts.length > 2 ? parts.slice(1, -1).join(' ') : ''
+
+    setFormData({
+      firstName,
+      middleName,
+      lastName,
+      examNumber: student.examination_number,
+      phone: student.phone_number || '',
+      classId: student.classes?.id || '',
+      dob: '' // DOB is not editable
+    })
+    setFormError('')
+    setIsModalOpen(true)
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault()
-    if (!formData.fullName || !formData.examNumber || !formData.classId) {
-      return setFormError('Name, Examination Number, and Class are required.')
+    if (!formData.firstName || !formData.lastName || !formData.examNumber || !formData.classId) {
+      return setFormError('First Name, Last Name, Examination Number, and Class are required.')
+    }
+
+    if (!editingId && !formData.dob) {
+      return setFormError('Date of Birth is required when adding a new student.')
     }
 
     setFormLoading(true)
     setFormError('')
 
-    try {
-      const { generatedPin } = await createStudent(formData, formData.enablePin)
-      setIsAdding(false)
-      setFormData({ fullName: '', examNumber: '', phone: '', classId: '', enablePin: true })
-      loadStudents() // refresh list
+    // Concatenate the full name for the database
+    const fullName = [formData.firstName, formData.middleName, formData.lastName]
+      .filter(Boolean)
+      .join(' ')
+      .trim()
 
-      if (generatedPin) {
-        setPinReveal({ name: formData.fullName, pin: generatedPin })
+    const payload = {
+      fullName,
+      examNumber: formData.examNumber,
+      phone: formData.phone,
+      classId: formData.classId,
+      dob: formData.dob
+    }
+
+    try {
+      if (editingId) {
+        await updateStudent(editingId, payload)
+      } else {
+        await createStudent(payload)
       }
+      
+      setIsModalOpen(false)
+      loadStudents()
     } catch (err) {
       setFormError(err.message)
     } finally {
       setFormLoading(false)
-    }
-  }
-
-  async function handleResetPin(studentId, studentName) {
-    if (!window.confirm(`Are you sure you want to reset the PIN for ${studentName}? The old PIN will immediately stop working.`)) return
-    
-    try {
-      const { newPin } = await resetStudentPin(studentId)
-      setPinReveal({ name: studentName, pin: newPin })
-      loadStudents()
-    } catch (err) {
-      alert(err.message)
     }
   }
 
@@ -113,7 +149,7 @@ export default function AdminStudents() {
             onChange={e => setFilterClass(e.target.value)}
           />
         </div>
-        <Button onClick={() => setIsAdding(true)}>+ Add Student</Button>
+        <Button onClick={handleAddClick}>+ Add Student</Button>
       </div>
 
       {/* Student List */}
@@ -125,7 +161,7 @@ export default function AdminStudents() {
                 <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Student Name</th>
                 <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Exam No.</th>
                 <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Class</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>PIN Status</th>
+                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Status</th>
                 <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Actions</th>
               </tr>
             </thead>
@@ -143,15 +179,15 @@ export default function AdminStudents() {
                     <td style={{ padding: '16px 24px' }}>
                       <span style={{ 
                         padding: '4px 8px', borderRadius: 12, fontSize: 12, fontWeight: 600,
-                        backgroundColor: s.code_status === 'active' ? '#e6f4ea' : '#f8f9fa',
-                        color: s.code_status === 'active' ? '#137333' : '#5f6368'
+                        backgroundColor: '#e6f4ea',
+                        color: '#137333'
                       }}>
-                        {s.code_status === 'active' ? 'Active' : 'No PIN'}
+                        Active
                       </span>
                     </td>
                     <td style={{ padding: '16px 24px' }}>
-                      <Button variant="outline" size="sm" onClick={() => handleResetPin(s.id, s.full_name)}>
-                        Reset PIN
+                      <Button variant="outline" size="sm" onClick={() => handleEditClick(s)}>
+                        Edit
                       </Button>
                     </td>
                   </tr>
@@ -162,23 +198,34 @@ export default function AdminStudents() {
         </div>
       </Card>
 
-      {/* Add Student Modal */}
-      {isAdding && (
+      {/* Add / Edit Student Modal */}
+      {isModalOpen && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 16 }}>
-          <Card style={{ width: '100%', maxWidth: 500 }}>
+          <Card style={{ width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto' }}>
             <Card.Header>
-              <Card.Title>Add New Student</Card.Title>
+              <Card.Title>{editingId ? 'Edit Student' : 'Add New Student'}</Card.Title>
             </Card.Header>
             <Card.Body>
               {formError && <div className="alert alert--warning" style={{ marginBottom: 16 }}>{formError}</div>}
               
-              <form onSubmit={handleAddSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <Input label="Full Name" value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} required />
-                <Input label="Examination Number" value={formData.examNumber} onChange={e => setFormData({...formData, examNumber: e.target.value})} required placeholder="e.g. 2026/001" />
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                
+                <div style={{ display: 'flex', gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <Input label="First Name *" value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} required />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <Input label="Last Name *" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} required />
+                  </div>
+                </div>
+
+                <Input label="Middle / Other Name (Optional)" value={formData.middleName} onChange={e => setFormData({...formData, middleName: e.target.value})} />
+                
+                <Input label="Examination Number *" value={formData.examNumber} onChange={e => setFormData({...formData, examNumber: e.target.value})} required placeholder="e.g. 2026/001" />
                 <Input label="Phone (Optional)" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
                 
                 <Input 
-                  label="Class" 
+                  label="Class *" 
                   type="select" 
                   options={[{value: '', label: 'Select a class...'}, ...classes.map(c => ({ value: c.id, label: c.name }))]}
                   value={formData.classId} 
@@ -186,45 +233,21 @@ export default function AdminStudents() {
                   required 
                 />
 
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', marginTop: 8, padding: 12, backgroundColor: 'rgba(0,0,0,0.02)', borderRadius: 8 }}>
-                  <input type="checkbox" checked={formData.enablePin} onChange={e => setFormData({...formData, enablePin: e.target.checked})} style={{ width: 18, height: 18 }} />
-                  <span style={{ fontWeight: 500 }}>Generate Access PIN?</span>
-                </label>
+                {!editingId && (
+                  <Input 
+                    label="Date of Birth / Fallback PIN *" 
+                    value={formData.dob} 
+                    onChange={e => setFormData({...formData, dob: e.target.value})} 
+                    required 
+                    placeholder="e.g. 2010/04 or 2000/01" 
+                  />
+                )}
 
                 <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
-                  <Button type="button" variant="outline" onClick={() => setIsAdding(false)} disabled={formLoading} style={{ flex: 1 }}>Cancel</Button>
-                  <Button type="submit" loading={formLoading} style={{ flex: 1 }}>Create Student</Button>
+                  <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={formLoading} style={{ flex: 1 }}>Cancel</Button>
+                  <Button type="submit" loading={formLoading} style={{ flex: 1 }}>{editingId ? 'Save Changes' : 'Create Student'}</Button>
                 </div>
               </form>
-            </Card.Body>
-          </Card>
-        </div>
-      )}
-
-      {/* PIN Reveal Modal (CRITICAL) */}
-      {pinReveal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2000, padding: 16 }}>
-          <Card style={{ width: '100%', maxWidth: 450, textAlign: 'center' }}>
-            <Card.Body>
-              <div style={{ fontSize: 48, marginBottom: 16 }}>🔑</div>
-              <h2 style={{ marginBottom: 8 }}>Student Created!</h2>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: 24, lineHeight: 1.5 }}>
-                Here is the access PIN for <strong>{pinReveal.name}</strong>.<br/>
-                <span style={{ color: '#d93025', fontWeight: 600 }}>Please write it down or copy it now. For security reasons, you will NEVER be able to see this PIN again.</span>
-              </p>
-              
-              <div style={{ backgroundColor: '#f1f3f4', padding: 24, borderRadius: 12, fontSize: 36, fontWeight: 800, letterSpacing: 4, marginBottom: 24 }}>
-                {pinReveal.pin}
-              </div>
-
-              <div style={{ display: 'flex', gap: 12 }}>
-                <Button variant="outline" style={{ flex: 1 }} onClick={() => navigator.clipboard.writeText(pinReveal.pin).then(() => alert('Copied!'))}>
-                  Copy to Clipboard
-                </Button>
-                <Button style={{ flex: 1 }} onClick={() => setPinReveal(null)}>
-                  I have saved it
-                </Button>
-              </div>
             </Card.Body>
           </Card>
         </div>
