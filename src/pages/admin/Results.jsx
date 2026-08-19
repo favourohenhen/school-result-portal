@@ -8,17 +8,17 @@ import { fetchClasses, fetchStudents } from '../../services/admin'
 
 export default function AdminResults() {
   const navigate = useNavigate()
-  
+
   const [classes, setClasses] = useState([])
   const [students, setStudents] = useState([])
-  
+
   const [filters, setFilters] = useState({
     session: '2026/2027',
     term: 'First Term',
     classId: '',
     search: ''
   })
-  
+
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function AdminResults() {
 
   return (
     <Layout role="admin" sidebar pageTitle="View Results">
-      
+
       <div className="page-header">
         <h2 className="page-title">School Results Viewer</h2>
         <p className="page-subtitle">Select a session and term, then pick a student to view their detailed report card.</p>
@@ -73,23 +73,23 @@ export default function AdminResults() {
           <Card.Title>Result Context</Card.Title>
         </Card.Header>
         <Card.Body style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          
+
           <div style={{ flex: '1 1 200px' }}>
-            <Input 
-              label="Active Session" 
-              type="select" 
-              options={[{value: '2025/2026', label: '2025/2026'}, {value: '2026/2027', label: '2026/2027'}]}
+            <Input
+              label="Active Session"
+              type="select"
+              options={[{ value: '2025/2026', label: '2025/2026' }, { value: '2026/2027', label: '2026/2027' }]}
               value={filters.session}
-              onChange={e => setFilters({...filters, session: e.target.value})}
+              onChange={e => setFilters({ ...filters, session: e.target.value })}
             />
           </div>
           <div style={{ flex: '1 1 200px' }}>
-            <Input 
-              label="Active Term" 
-              type="select" 
-              options={[{value: 'First Term', label: 'First Term'}, {value: 'Second Term', label: 'Second Term'}, {value: 'Third Term', label: 'Third Term'}]}
+            <Input
+              label="Active Term"
+              type="select"
+              options={[{ value: 'First Term', label: 'First Term' }, { value: 'Second Term', label: 'Second Term' }, { value: 'Third Term', label: 'Third Term' }]}
               value={filters.term}
-              onChange={e => setFilters({...filters, term: e.target.value})}
+              onChange={e => setFilters({ ...filters, term: e.target.value })}
             />
           </div>
 
@@ -101,25 +101,25 @@ export default function AdminResults() {
           <Card.Title>Student Directory</Card.Title>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end' }}>
             <div style={{ flex: '1 1 150px', maxWidth: 300 }}>
-              <Input 
-                placeholder="Search name/exam no..." 
+              <Input
+                placeholder="Search name/exam no..."
                 value={filters.search}
-                onChange={e => setFilters({...filters, search: e.target.value})}
+                onChange={e => setFilters({ ...filters, search: e.target.value })}
               />
             </div>
             <div style={{ flex: '1 1 150px', maxWidth: 300 }}>
-              <Input 
-                type="select" 
-                options={[{value: '', label: 'All Classes'}, ...classes.map(c => ({value: c.id, label: c.name}))]}
+              <Input
+                type="select"
+                options={[{ value: '', label: 'All Classes' }, ...classes.map(c => ({ value: c.id, label: c.name }))]}
                 value={filters.classId}
-                onChange={e => setFilters({...filters, classId: e.target.value})}
+                onChange={e => setFilters({ ...filters, classId: e.target.value })}
               />
             </div>
           </div>
         </Card.Header>
-        
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+
+        <div className="admin-table-wrap" style={{ overflowX: 'auto' }}>
+          <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
                 <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Student Name</th>
@@ -130,9 +130,9 @@ export default function AdminResults() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan="4" style={{ padding: 24, textAlign: 'center' }}>Loading students...</td></tr>
+                <tr className="admin-table-utility"><td colSpan="4" style={{ padding: 24, textAlign: 'center' }}>Loading students...</td></tr>
               ) : students.length === 0 ? (
-                <tr>
+                <tr className="admin-table-utility">
                   <td colSpan="4" style={{ padding: 0 }}>
                     <div className="empty-state">
                       <div className="empty-state__icon">👥</div>
@@ -144,16 +144,16 @@ export default function AdminResults() {
               ) : (
                 students.map(s => (
                   <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '12px 16px', fontWeight: 600 }}>{s.full_name}</td>
-                    <td style={{ padding: '12px 16px', fontFamily: 'monospace', maxWidth: '120px' }}>
+                    <td data-label="Name" style={{ padding: '12px 16px', fontWeight: 600 }}>{s.full_name}</td>
+                    <td data-label="Exam No." style={{ padding: '12px 16px', fontFamily: 'monospace', maxWidth: '120px' }}>
                       {s.examination_number.includes('/') ? (
                         <>{s.examination_number.split('/')[0]}/<br className="mobile-break" />{s.examination_number.split('/')[1]}</>
                       ) : s.examination_number}
                     </td>
-                    <td style={{ padding: '12px 16px' }}>{s.classes?.name || '—'}</td>
-                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
-                      <Button variant="outline" size="sm" onClick={() => handleViewStudent(s.id)}>
-                        View Results →
+                    <td data-label="Class" style={{ padding: '12px 16px' }}>{s.classes?.name || '—'}</td>
+                    <td data-label="Action" style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
+                      <Button variant="outline" size="sm" onClick={() => handleViewStudent(s.id)} style={{ minWidth: 'max-content' }}>
+                        View <br className="mobile-break" />Results →
                       </Button>
                     </td>
                   </tr>

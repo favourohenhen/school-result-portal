@@ -67,8 +67,8 @@ export default function AdminSubjects() {
       </div>
 
       <Card>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <div className="admin-table-wrap" style={{ overflowX: 'auto' }}>
+          <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
                 <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Subject Name</th>
@@ -78,9 +78,9 @@ export default function AdminSubjects() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan="3" style={{ padding: 24, textAlign: 'center' }}>Loading...</td></tr>
+                <tr className="admin-table-utility"><td colSpan="3" style={{ padding: 24, textAlign: 'center' }}>Loading...</td></tr>
               ) : subjects.length === 0 ? (
-                <tr>
+                <tr className="admin-table-utility">
                   <td colSpan="3" style={{ padding: 0 }}>
                     <div className="empty-state">
                       <div className="empty-state__icon">📖</div>
@@ -92,11 +92,11 @@ export default function AdminSubjects() {
               ) : (
                 subjects.map(s => (
                   <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '12px 16px', fontWeight: 600 }}>{s.name}</td>
-                    <td style={{ padding: '12px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>
+                    <td data-label="Subject Name" style={{ padding: '12px 16px', fontWeight: 600 }}>{s.name}</td>
+                    <td data-label="Date Created" style={{ padding: '12px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>
                       {new Date(s.created_at).toLocaleDateString()}
                     </td>
-                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
+                    <td data-label="Actions" style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
                       <Button variant="outline" size="sm" onClick={() => handleDelete(s.id, s.name)} style={{ color: '#d93025', borderColor: '#d93025' }}>
                         Delete
                       </Button>

@@ -76,8 +76,8 @@ export default function AdminTeachers() {
           <Card.Title>Registered Teachers</Card.Title>
           <Card.Subtitle>Assign teachers to specific classes</Card.Subtitle>
         </Card.Header>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <div className="admin-table-wrap" style={{ overflowX: 'auto' }}>
+          <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
                 <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Teacher Name</th>
@@ -87,9 +87,9 @@ export default function AdminTeachers() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan="3" style={{ padding: 24, textAlign: 'center' }}>Loading...</td></tr>
+                <tr className="admin-table-utility"><td colSpan="4" style={{ padding: 24, textAlign: 'center' }}>Loading teachers...</td></tr>
               ) : teachers.length === 0 ? (
-                <tr>
+                <tr className="admin-table-utility">
                   <td colSpan="3" style={{ padding: 0 }}>
                     <div className="empty-state">
                       <div className="empty-state__icon">👨‍🏫</div>
@@ -101,19 +101,19 @@ export default function AdminTeachers() {
               ) : (
                 teachers.map(t => (
                   <tr key={t.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '12px 16px', fontWeight: 600 }}>{t.full_name}</td>
-                    <td style={{ padding: '12px 16px' }}>
-                      {t.teacher_class_assignments.length === 0 ? (
-                        <span style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>No classes assigned</span>
+                    <td data-label="Teacher Name" style={{ padding: '12px 16px', fontWeight: 600 }}>{t.full_name}</td>
+                    <td data-label="Assigned Classes" style={{ padding: '12px 16px' }}>
+                      {!t.teacher_assignments?.length ? (
+                        <span style={{ color: 'var(--text-secondary)' }}>None</span>
                       ) : (
                         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                          {t.teacher_class_assignments.map(a => (
-                            <span key={a.class_id} style={{ 
+                          {t.teacher_assignments.map(a => (
+                            <span key={a.classes.id} style={{ 
+                              background: 'var(--color-bg)', 
                               padding: '2px 8px', 
-                              backgroundColor: '#e8f0fe', 
-                              color: '#1a73e8', 
                               borderRadius: 12, 
                               fontSize: 12,
+                              border: '1px solid var(--border-color)',
                               fontWeight: 500 
                             }}>
                               {a.classes.name}
@@ -122,9 +122,9 @@ export default function AdminTeachers() {
                         </div>
                       )}
                     </td>
-                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
-                      <Button variant="outline" size="sm" onClick={() => handleAssignClick(t)}>
-                        Assign Classes
+                    <td data-label="Actions" style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
+                      <Button variant="outline" size="sm" onClick={() => handleAssignClick(t)} style={{ minWidth: 'max-content' }}>
+                        Assign <br className="mobile-break" />Classes
                       </Button>
                     </td>
                   </tr>
