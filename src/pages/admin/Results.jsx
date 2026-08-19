@@ -99,15 +99,15 @@ export default function AdminResults() {
       <Card>
         <Card.Header style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'space-between' }}>
           <Card.Title>Student Directory</Card.Title>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <div style={{ width: 200 }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', flex: 1, justifyContent: 'flex-end' }}>
+            <div style={{ flex: '1 1 150px', maxWidth: 300 }}>
               <Input 
                 placeholder="Search name/exam no..." 
                 value={filters.search}
                 onChange={e => setFilters({...filters, search: e.target.value})}
               />
             </div>
-            <div style={{ width: 200 }}>
+            <div style={{ flex: '1 1 150px', maxWidth: 300 }}>
               <Input 
                 type="select" 
                 options={[{value: '', label: 'All Classes'}, ...classes.map(c => ({value: c.id, label: c.name}))]}
@@ -123,9 +123,9 @@ export default function AdminResults() {
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
                 <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Student Name</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Exam No.</th>
+                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', maxWidth: '120px' }}>Exam No.</th>
                 <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Class</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Action</th>
+                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -145,9 +145,9 @@ export default function AdminResults() {
                 students.map(s => (
                   <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                     <td style={{ padding: '16px 24px', fontWeight: 600 }}>{s.full_name}</td>
-                    <td style={{ padding: '16px 24px', fontFamily: 'monospace' }}>{s.examination_number}</td>
+                    <td style={{ padding: '16px 24px', fontFamily: 'monospace', wordBreak: 'break-all', maxWidth: '120px' }}>{s.examination_number}</td>
                     <td style={{ padding: '16px 24px' }}>{s.classes?.name || '—'}</td>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', width: '1%' }}>
                       <Button variant="outline" size="sm" onClick={() => handleViewStudent(s.id)}>
                         View Results →
                       </Button>

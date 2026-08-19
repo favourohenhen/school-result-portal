@@ -82,7 +82,7 @@ export default function AdminTeachers() {
               <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
                 <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Teacher Name</th>
                 <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Assigned Classes</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Actions</th>
+                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -122,7 +122,7 @@ export default function AdminTeachers() {
                         </div>
                       )}
                     </td>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', width: '1%' }}>
                       <Button variant="outline" size="sm" onClick={() => handleAssignClick(t)}>
                         Assign Classes
                       </Button>

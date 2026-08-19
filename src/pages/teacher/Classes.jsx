@@ -140,8 +140,8 @@ export default function TeacherClasses() {
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
                   <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Student Name</th>
-                  <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Exam No.</th>
-                  <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Result Status</th>
+                  <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', maxWidth: '120px' }}>Exam No.</th>
+                  <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Result Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -165,8 +165,8 @@ export default function TeacherClasses() {
                     return (
                       <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                         <td style={{ padding: '16px 24px', fontWeight: 600 }}>{s.full_name}</td>
-                        <td style={{ padding: '16px 24px', fontFamily: 'monospace' }}>{s.examination_number}</td>
-                        <td style={{ padding: '16px 24px' }}>
+                        <td style={{ padding: '16px 24px', fontFamily: 'monospace', wordBreak: 'break-all', maxWidth: '120px' }}>{s.examination_number}</td>
+                        <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', width: '1%' }}>
                           {isRecorded ? (
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, backgroundColor: 'var(--color-success-bg)', color: 'var(--color-success)', fontWeight: 600, fontSize: 13 }}>
                               ✅ Recorded ({count} subjects)

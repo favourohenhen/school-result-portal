@@ -72,8 +72,8 @@ export default function AdminSubjects() {
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
                 <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Subject Name</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Date Created</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Actions</th>
+                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Date Created</th>
+                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -93,10 +93,10 @@ export default function AdminSubjects() {
                 subjects.map(s => (
                   <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                     <td style={{ padding: '16px 24px', fontWeight: 600 }}>{s.name}</td>
-                    <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>
+                    <td style={{ padding: '16px 24px', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>
                       {new Date(s.created_at).toLocaleDateString()}
                     </td>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', width: '1%' }}>
                       <Button variant="outline" size="sm" onClick={() => handleDelete(s.id, s.name)} style={{ color: '#d93025', borderColor: '#d93025' }}>
                         Delete
                       </Button>

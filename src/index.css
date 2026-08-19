@@ -680,3 +680,46 @@ h1, h2, h3, h4, h5, h6 { font-weight: var(--weight-bold); line-height: 1.3; }
 ::-webkit-scrollbar-track { background: var(--color-bg); }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: var(--r-full); }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+
+/* ----------------------------------------------------------------
+   21. MOBILE RESPONSIVENESS (Deep Build)
+   ---------------------------------------------------------------- */
+/* Prevent form elements from breaking out of containers */
+.form-input, .form-select, .form-input-wrapper, .form-group {
+  max-width: 100%; box-sizing: border-box; word-break: break-word;
+}
+.table-wrapper {
+  width: 100%; max-width: 100%; box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  /* Layout Padding */
+  .sidebar-main__page { padding: var(--sp-4); }
+  .container { padding: 0 var(--sp-4); }
+  
+  /* Cards */
+  .card__header { padding: var(--sp-4); flex-direction: column; align-items: flex-start; gap: var(--sp-2); }
+  .card__body { padding: var(--sp-4); }
+  .card__footer { padding: var(--sp-4); flex-direction: column; align-items: stretch; }
+  
+  /* Modals */
+  .modal { padding: var(--sp-5); max-height: 95vh; border-radius: var(--r-lg) var(--r-lg) 0 0; }
+  .modal__header { margin-bottom: var(--sp-4); }
+  
+  /* Typography Scaling & Text Overflow Prevention */
+  h1, h2, h3, h4, h5, h6, p, span { word-break: break-word; }
+  .page-title { font-size: var(--text-xl); }
+  .page-subtitle { font-size: var(--text-sm); }
+  .login-brand__title { font-size: 22px; }
+  .login-brand__subtitle { font-size: var(--text-xs); }
+  
+  /* Login Cards */
+  .login-card { padding: var(--sp-6) var(--sp-4); border-radius: var(--r-lg); }
+  .login-page::before, .login-page::after { display: none; }
+  
+  /* Buttons */
+  .btn { padding: 9px var(--sp-4); font-size: var(--text-sm); white-space: normal; text-align: center; line-height: 1.4; }
+  
+  /* Tables */
+  .table th, .table td { padding: var(--sp-2) var(--sp-3); font-size: var(--text-xs); }
+}

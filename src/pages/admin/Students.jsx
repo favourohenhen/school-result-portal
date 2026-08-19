@@ -132,7 +132,7 @@ export default function AdminStudents() {
       
       {/* Top Actions */}
       <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-        <div style={{ flex: 1, minWidth: 200 }}>
+        <div style={{ flex: '1 1 200px' }}>
           <Input 
             label="Search Students" 
             placeholder="Name or Exam Number..." 
@@ -140,7 +140,7 @@ export default function AdminStudents() {
             onChange={e => setSearch(e.target.value)}
           />
         </div>
-        <div style={{ width: 200 }}>
+        <div style={{ flex: '1 1 200px' }}>
           <Input 
             label="Filter by Class" 
             type="select"
@@ -159,10 +159,10 @@ export default function AdminStudents() {
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
                 <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Student Name</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Exam No.</th>
+                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', maxWidth: '120px' }}>Exam No.</th>
                 <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Class</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Status</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Actions</th>
+                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Status</th>
+                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -182,9 +182,9 @@ export default function AdminStudents() {
                 students.map(s => (
                   <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                     <td style={{ padding: '16px 24px', fontWeight: 600 }}>{s.full_name}</td>
-                    <td style={{ padding: '16px 24px', fontFamily: 'monospace' }}>{s.examination_number}</td>
+                    <td style={{ padding: '16px 24px', fontFamily: 'monospace', wordBreak: 'break-all', maxWidth: '120px' }}>{s.examination_number}</td>
                     <td style={{ padding: '16px 24px' }}>{s.classes?.name || '—'}</td>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', width: '1%' }}>
                       <span style={{ 
                         padding: '4px 8px', borderRadius: 12, fontSize: 12, fontWeight: 600,
                         backgroundColor: '#e6f4ea',
@@ -193,7 +193,7 @@ export default function AdminStudents() {
                         Active
                       </span>
                     </td>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', width: '1%' }}>
                       <Button variant="outline" size="sm" onClick={() => handleEditClick(s)}>
                         Edit
                       </Button>
