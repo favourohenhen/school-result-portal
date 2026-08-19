@@ -96,41 +96,36 @@ export default function TeacherClasses() {
         <p className="page-subtitle">Track result entry progress for all students in your class.</p>
       </div>
 
-      <Card style={{ marginBottom: 24 }}>
-        <Card.Header>
-          <Card.Title>Filter & Select</Card.Title>
-        </Card.Header>
-        <Card.Body style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <div style={{ flex: '2 1 200px' }}>
-            <Input 
-              label="Select Class" 
-              type="select" 
-              options={[{value: '', label: '-- Select a class --'}, ...classes.map(c => ({value: c.id, label: c.name}))]}
-              value={selectedClassId}
-              onChange={e => setSelectedClassId(e.target.value)}
-              disabled={loadingClasses}
-            />
-          </div>
-          <div style={{ flex: '1 1 150px' }}>
-            <Input 
-              label="Session" 
-              type="select" 
-              options={[{value: '2025/2026', label: '2025/2026'}, {value: '2026/2027', label: '2026/2027'}]}
-              value={filters.session}
-              onChange={e => setFilters({...filters, session: e.target.value})}
-            />
-          </div>
-          <div style={{ flex: '1 1 150px' }}>
-            <Input 
-              label="Term" 
-              type="select" 
-              options={[{value: 'First Term', label: 'First Term'}, {value: 'Second Term', label: 'Second Term'}, {value: 'Third Term', label: 'Third Term'}]}
-              value={filters.term}
-              onChange={e => setFilters({...filters, term: e.target.value})}
-            />
-          </div>
-        </Card.Body>
-      </Card>
+      <div style={{ display: 'flex', gap: 16, marginBottom: 24, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+        <div style={{ flex: '1 1 200px' }}>
+          <Input 
+            label="Select Class" 
+            type="select" 
+            options={[{value: '', label: '-- Select a class --'}, ...classes.map(c => ({value: c.id, label: c.name}))]}
+            value={selectedClassId}
+            onChange={e => setSelectedClassId(e.target.value)}
+            disabled={loadingClasses}
+          />
+        </div>
+        <div style={{ flex: '0 1 200px' }}>
+          <Input 
+            label="Session" 
+            type="select" 
+            options={[{value: '2025/2026', label: '2025/2026'}, {value: '2026/2027', label: '2026/2027'}]}
+            value={filters.session}
+            onChange={e => setFilters({...filters, session: e.target.value})}
+          />
+        </div>
+        <div style={{ flex: '0 1 200px' }}>
+          <Input 
+            label="Term" 
+            type="select" 
+            options={[{value: 'First Term', label: 'First Term'}, {value: 'Second Term', label: 'Second Term'}, {value: 'Third Term', label: 'Third Term'}]}
+            value={filters.term}
+            onChange={e => setFilters({...filters, term: e.target.value})}
+          />
+        </div>
+      </div>
 
       <Card>
         {!selectedClassId ? (

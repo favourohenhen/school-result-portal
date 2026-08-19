@@ -197,10 +197,16 @@ h1, h2, h3, h4, h5, h6 { font-weight: var(--weight-bold); line-height: 1.3; }
   background-color: var(--color-primary);
   display: flex; flex-direction: column;
   flex-shrink: 0;
-  position: fixed; top: 0; left: 0;
-  height: 100vh; z-index: 200;
+  position: fixed; top: 0; left: 0; bottom: 0;
+  height: 100%; z-index: 200;
   transition: transform .3s ease;
   overflow-y: auto;
+  /* Hide scrollbar for a cleaner look */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.sidebar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 .sidebar__brand {
   padding: var(--sp-5) var(--sp-6);

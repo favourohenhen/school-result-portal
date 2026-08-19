@@ -91,8 +91,9 @@ export default function TeacherLogin() {
         </form>
 
         <div className="login-footer">
-          <p>Admin? <Link to="/admin/login">Admin Login →</Link></p>
-          <p style={{ marginTop: 8 }}>Student? <Link to="/login">Student Login →</Link></p>
+          <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <span>←</span> Back to Portal
+          </Link>
         </div>
 
       </div>

@@ -17,6 +17,7 @@ import { ToastProvider } from './components/Toast'
 import Login           from './pages/Login'
 import AdminLogin      from './pages/AdminLogin'
 import TeacherLogin    from './pages/TeacherLogin'
+import RoleSelection   from './pages/RoleSelection'
 import AdminDashboard  from './pages/admin/Dashboard'
 import AdminStudents   from './pages/admin/Students'
 import AdminClasses    from './pages/admin/Classes'
@@ -36,7 +37,7 @@ export default function App() {
         <ToastProvider>
           <Routes>
             {/* Student */}
-            <Route path="/login"             element={<Login />} />
+            <Route path="/student/login"     element={<Login />} />
             <Route path="/student/dashboard" element={<StudentDashboard />} />
 
             {/* Staff */}
@@ -54,9 +55,9 @@ export default function App() {
             <Route path="/teacher/classes"   element={<TeacherClasses />} />
             <Route path="/teacher/results"   element={<TeacherResults />} />
 
-            {/* Redirect root and unknown paths to student login */}
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
+            {/* Redirect root and unknown paths to role selection */}
+            <Route path="/" element={<RoleSelection />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ToastProvider>
       </AuthProvider>

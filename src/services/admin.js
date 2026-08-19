@@ -32,6 +32,16 @@ export async function fetchDashboardStats() {
   }
 }
 
+export async function fetchClassBreakdown() {
+  const { data, error } = await supabase
+    .from('classes')
+    .select('id, name, students(count)')
+    .order('name')
+
+  if (error) throw new Error(error.message)
+  return data
+}
+
 export async function createClass(name) {
   const { data, error } = await supabase
     .from('classes')
