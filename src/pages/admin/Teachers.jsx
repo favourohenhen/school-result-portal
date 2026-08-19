@@ -80,9 +80,9 @@ export default function AdminTeachers() {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Teacher Name</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Assigned Classes</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Actions</th>
+                <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Teacher Name</th>
+                <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Assigned Classes</th>
+                <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -101,8 +101,8 @@ export default function AdminTeachers() {
               ) : (
                 teachers.map(t => (
                   <tr key={t.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '16px 24px', fontWeight: 600 }}>{t.full_name}</td>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td style={{ padding: '12px 16px', fontWeight: 600 }}>{t.full_name}</td>
+                    <td style={{ padding: '12px 16px' }}>
                       {t.teacher_class_assignments.length === 0 ? (
                         <span style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>No classes assigned</span>
                       ) : (
@@ -122,7 +122,7 @@ export default function AdminTeachers() {
                         </div>
                       )}
                     </td>
-                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', width: '1%' }}>
+                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
                       <Button variant="outline" size="sm" onClick={() => handleAssignClick(t)}>
                         Assign Classes
                       </Button>

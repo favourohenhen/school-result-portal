@@ -76,7 +76,7 @@ export default function TeacherDashboard() {
                   {classStats[cls.id] !== undefined ? `${classStats[cls.id]} Students Registered` : 'Loading students...'}
                 </p>
               </div>
-              <div style={{ padding: '16px 24px', backgroundColor: 'rgba(0,0,0,0.02)', borderTop: '1px solid var(--border-color)' }}>
+              <div style={{ padding: '12px 16px', backgroundColor: 'rgba(0,0,0,0.02)', borderTop: '1px solid var(--border-color)' }}>
                 <button 
                   className="btn btn--primary" 
                   style={{ width: '100%' }}

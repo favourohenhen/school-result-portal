@@ -91,9 +91,9 @@ export default function AdminStudentResult() {
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
-                    <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Subject</th>
-                    <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Score (100)</th>
-                    <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Grade</th>
+                    <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Subject</th>
+                    <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Score (100)</th>
+                    <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Grade</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -111,9 +111,9 @@ export default function AdminStudentResult() {
                         const grade = getGrade(r.score)
                         return (
                           <tr key={r.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                            <td style={{ padding: '16px 24px', fontWeight: 600 }}>{r.subjects?.name || 'Unknown'}</td>
-                            <td style={{ padding: '16px 24px', fontWeight: 500, fontSize: 16, whiteSpace: 'nowrap', width: '1%' }}>{r.score}</td>
-                            <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', width: '1%' }}>
+                            <td style={{ padding: '12px 16px', fontWeight: 600 }}>{r.subjects?.name || 'Unknown'}</td>
+                            <td style={{ padding: '12px 16px', fontWeight: 500, fontSize: 16, whiteSpace: 'nowrap', width: '1%' }}>{r.score}</td>
+                            <td style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
                               <span style={{
                                 padding: '6px 12px',
                                 borderRadius: 8,

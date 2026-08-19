@@ -71,9 +71,9 @@ export default function AdminClasses() {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Class Name</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Date Created</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Actions</th>
+                <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Class Name</th>
+                <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Date Created</th>
+                <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -92,11 +92,11 @@ export default function AdminClasses() {
               ) : (
                 classes.map(c => (
                   <tr key={c.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '16px 24px', fontWeight: 600 }}>{c.name}</td>
-                    <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>
+                    <td style={{ padding: '12px 16px', fontWeight: 600 }}>{c.name}</td>
+                    <td style={{ padding: '12px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>
                       {new Date(c.created_at).toLocaleDateString()}
                     </td>
-                    <td style={{ padding: '16px 24px' }}>
+                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
                       <Button variant="outline" size="sm" onClick={() => handleDelete(c.id, c.name)} style={{ color: '#d93025', borderColor: '#d93025' }}>
                         Delete
                       </Button>

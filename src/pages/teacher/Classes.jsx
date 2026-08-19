@@ -139,9 +139,9 @@ export default function TeacherClasses() {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
-                  <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Student Name</th>
-                  <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', maxWidth: '120px' }}>Exam No.</th>
-                  <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Result Status</th>
+                  <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Student Name</th>
+                  <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', maxWidth: '120px' }}>Exam No.</th>
+                  <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Result Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -164,15 +164,20 @@ export default function TeacherClasses() {
 
                     return (
                       <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                        <td style={{ padding: '16px 24px', fontWeight: 600 }}>{s.full_name}</td>
-                        <td style={{ padding: '16px 24px', fontFamily: 'monospace', wordBreak: 'break-all', maxWidth: '120px' }}>{s.examination_number}</td>
-                        <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', width: '1%' }}>
+                        <td style={{ padding: '12px 16px', fontWeight: 600 }}>{s.full_name}</td>
+                        <td style={{ padding: '12px 16px', fontFamily: 'monospace', maxWidth: '120px' }}>
+                          {s.examination_number.includes('/') ? (
+                            <>{s.examination_number.split('/')[0]}/<br className="mobile-break" />{s.examination_number.split('/')[1]}</>
+                          ) : s.examination_number}
+                        </td>
+                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
                           {isRecorded ? (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, backgroundColor: 'var(--color-success-bg)', color: 'var(--color-success)', fontWeight: 600, fontSize: 13 }}>
-                              ✅ Recorded ({count} subjects)
+                            <span className="status-badge status-badge--success">
+                              <span className="status-badge__main">✅ Recorded</span>
+                              <span className="status-badge__sub">({count} subjects)</span>
                             </span>
                           ) : (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, backgroundColor: 'var(--color-error-bg)', color: 'var(--color-error)', fontWeight: 600, fontSize: 13 }}>
+                            <span className="status-badge status-badge--error">
                               ❌ Unrecorded
                             </span>
                           )}

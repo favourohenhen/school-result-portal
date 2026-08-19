@@ -122,10 +122,10 @@ export default function AdminResults() {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Student Name</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', maxWidth: '120px' }}>Exam No.</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Class</th>
-                <th style={{ padding: '16px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Action</th>
+                <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Student Name</th>
+                <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', maxWidth: '120px' }}>Exam No.</th>
+                <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Class</th>
+                <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -144,10 +144,14 @@ export default function AdminResults() {
               ) : (
                 students.map(s => (
                   <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                    <td style={{ padding: '16px 24px', fontWeight: 600 }}>{s.full_name}</td>
-                    <td style={{ padding: '16px 24px', fontFamily: 'monospace', wordBreak: 'break-all', maxWidth: '120px' }}>{s.examination_number}</td>
-                    <td style={{ padding: '16px 24px' }}>{s.classes?.name || '—'}</td>
-                    <td style={{ padding: '16px 24px', whiteSpace: 'nowrap', width: '1%' }}>
+                    <td style={{ padding: '12px 16px', fontWeight: 600 }}>{s.full_name}</td>
+                    <td style={{ padding: '12px 16px', fontFamily: 'monospace', maxWidth: '120px' }}>
+                      {s.examination_number.includes('/') ? (
+                        <>{s.examination_number.split('/')[0]}/<br className="mobile-break" />{s.examination_number.split('/')[1]}</>
+                      ) : s.examination_number}
+                    </td>
+                    <td style={{ padding: '12px 16px' }}>{s.classes?.name || '—'}</td>
+                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
                       <Button variant="outline" size="sm" onClick={() => handleViewStudent(s.id)}>
                         View Results →
                       </Button>
