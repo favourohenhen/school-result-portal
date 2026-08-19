@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 /**
  * Input / Select Component
  *
@@ -24,14 +26,19 @@ export function Input({
   className = '',
   ...rest
 }) {
+  const [showPassword, setShowPassword] = useState(false)
+  
   const hasError = Boolean(error)
   const ariaDesc = hasError ? `${id}-error` : hint ? `${id}-hint` : undefined
+  const isPassword = type === 'password'
+  const actualType = isPassword ? (showPassword ? 'text' : 'password') : type
 
   const inputCls = [
     'form-input',
     icon        ? 'form-input--icon' : '',
     type === 'select' ? 'form-select' : '',
     hasError    ? 'form-input--error' : '',
+    isPassword  ? 'form-input--password' : '', // To add padding-right for toggle
     className,
   ].filter(Boolean).join(' ')
 
@@ -52,7 +59,7 @@ export function Input({
         ))}
       </select>
     ) : (
-      <input type={type} {...sharedProps} />
+      <input type={actualType} {...sharedProps} />
     )
 
   return (
@@ -63,12 +70,26 @@ export function Input({
         </label>
       )}
 
-      {icon ? (
-        <div className="form-input-wrapper">
-          <span className="form-input-icon" aria-hidden="true">{icon}</span>
-          {field}
-        </div>
-      ) : field}
+      <div className="form-input-wrapper" style={{ position: 'relative' }}>
+        {icon && <span className="form-input-icon" aria-hidden="true">{icon}</span>}
+        
+        {field}
+        
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            style={{
+              position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: 14, color: 'var(--color-text-secondary)', padding: 4
+            }}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        )}
+      </div>
 
       {hasError && (
         <span id={`${id}-error`} className="form-error" role="alert">
