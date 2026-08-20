@@ -94,7 +94,7 @@ export default function AdminClasses() {
                   <tr key={c.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                     <td data-label="Class Name" style={{ padding: '12px 16px', fontWeight: 600 }}>{c.name}</td>
                     <td data-label="Date Created" style={{ padding: '12px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>
-                      {new Date(c.created_at).toLocaleDateString()}
+                      {c.created_at ? new Date(c.created_at).toLocaleDateString('en-GB') : 'N/A'}
                     </td>
                     <td data-label="Actions" style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
                       <Button variant="outline" size="sm" onClick={() => handleDelete(c.id, c.name)} style={{ color: '#d93025', borderColor: '#d93025' }}>
@@ -112,7 +112,7 @@ export default function AdminClasses() {
       {/* Add Modal */}
       {isAdding && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 16 }}>
-          <Card style={{ width: '100%', maxWidth: 400 }}>
+          <Card style={{ width: '100%', maxWidth: 400, maxHeight: '90vh', overflowY: 'auto' }}>
             <Card.Header>
               <Card.Title>Add New Class</Card.Title>
             </Card.Header>

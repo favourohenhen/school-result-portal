@@ -11,6 +11,7 @@ export default function AdminSubjects() {
   
   const [isAdding, setIsAdding] = useState(false)
   const [subjectName, setSubjectName] = useState('')
+  const [subjectCategory, setSubjectCategory] = useState('Junior Secondary')
   const [formError, setFormError] = useState('')
   const [formLoading, setFormLoading] = useState(false)
 
@@ -37,9 +38,10 @@ export default function AdminSubjects() {
     setFormError('')
 
     try {
-      await createSubject(subjectName.trim())
+      await createSubject(subjectName.trim(), subjectCategory)
       setIsAdding(false)
       setSubjectName('')
+      setSubjectCategory('Junior Secondary')
       loadSubjects()
     } catch (err) {
       setFormError(err.message)
@@ -72,6 +74,7 @@ export default function AdminSubjects() {
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
                 <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Subject Name</th>
+                <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Category</th>
                 <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Date Created</th>
                 <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>Actions</th>
               </tr>
@@ -81,7 +84,7 @@ export default function AdminSubjects() {
                 <tr className="admin-table-utility"><td colSpan="3" style={{ padding: 24, textAlign: 'center' }}>Loading...</td></tr>
               ) : subjects.length === 0 ? (
                 <tr className="admin-table-utility">
-                  <td colSpan="3" style={{ padding: 0 }}>
+                  <td colSpan="4" style={{ padding: 0 }}>
                     <div className="empty-state">
                       <div className="empty-state__icon">📖</div>
                       <h3>No subjects found</h3>
@@ -93,8 +96,11 @@ export default function AdminSubjects() {
                 subjects.map(s => (
                   <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                     <td data-label="Subject Name" style={{ padding: '12px 16px', fontWeight: 600 }}>{s.name}</td>
+                    <td data-label="Category" style={{ padding: '12px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>
+                      {s.category || 'Junior Secondary'}
+                    </td>
                     <td data-label="Date Created" style={{ padding: '12px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap', width: '1%' }}>
-                      {new Date(s.created_at).toLocaleDateString()}
+                      {s.created_at ? new Date(s.created_at).toLocaleDateString('en-GB') : 'N/A'}
                     </td>
                     <td data-label="Actions" style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
                       <Button variant="outline" size="sm" onClick={() => handleDelete(s.id, s.name)} style={{ color: '#d93025', borderColor: '#d93025' }}>
@@ -112,7 +118,7 @@ export default function AdminSubjects() {
       {/* Add Modal */}
       {isAdding && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 16 }}>
-          <Card style={{ width: '100%', maxWidth: 400 }}>
+          <Card style={{ width: '100%', maxWidth: 400, maxHeight: '90vh', overflowY: 'auto' }}>
             <Card.Header>
               <Card.Title>Add New Subject</Card.Title>
             </Card.Header>
@@ -128,6 +134,19 @@ export default function AdminSubjects() {
                   placeholder="e.g. Mathematics" 
                   autoFocus
                 />
+
+                <div className="form-group">
+                  <label className="form-label">Category</label>
+                  <select
+                    className="form-input"
+                    value={subjectCategory}
+                    onChange={e => setSubjectCategory(e.target.value)}
+                    required
+                  >
+                    <option value="Junior Secondary">Junior Secondary</option>
+                    <option value="Senior Secondary">Senior Secondary</option>
+                  </select>
+                </div>
 
                 <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
                   <Button type="button" variant="outline" onClick={() => setIsAdding(false)} disabled={formLoading} style={{ flex: 1 }}>Cancel</Button>

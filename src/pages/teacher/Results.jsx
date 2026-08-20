@@ -4,18 +4,22 @@ import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
 import { Input } from '../../components/Input'
 import { fetchAssignedClasses, fetchStudentsByClass } from '../../services/teacher'
-import { fetchSubjects } from '../../services/admin' // Shared fetcher
-import { saveResult } from '../../services/results'
+import { fetchSubjects, fetchAllResults } from '../../services/admin' // Shared fetchers
+import { saveResult, updateResultScore } from '../../services/results'
 import { useToast } from '../../components/Toast'
 
 export default function TeacherResults() {
   const { showToast } = useToast()
   
+  const [activeTab, setActiveTab] = useState('enter') // 'enter' | 'view'
+  
+  // Shared Data
   const [classes, setClasses] = useState([])
   const [subjects, setSubjects] = useState([])
-  const [students, setStudents] = useState([])
   
-  const [formData, setFormData] = useState({
+  // == ENTER RESULTS STATE ==
+  const [students, setStudents] = useState([])
+  const [enterFormData, setEnterFormData] = useState({
     classId: '',
     studentId: '',
     subjectId: '',
@@ -23,23 +27,44 @@ export default function TeacherResults() {
     session: '2026/2027',
     score: ''
   })
+  const [enterLoading, setEnterLoading] = useState(false)
+  const [enterError, setEnterError] = useState('')
+
+  // == VIEW RESULTS STATE ==
+  const [viewFilters, setViewFilters] = useState({
+    classId: '',
+    term: '',
+    session: ''
+  })
+  const [results, setResults] = useState([])
+  const [viewLoading, setViewLoading] = useState(false)
   
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  // Edit Modal State
+  const [editingResult, setEditingResult] = useState(null)
+  const [editScore, setEditScore] = useState('')
+  const [editLoading, setEditLoading] = useState(false)
+  const [editError, setEditError] = useState('')
 
   useEffect(() => {
     loadInitialData()
   }, [])
 
-  // When class changes, fetch students for that class
+  // When class changes in Entry form, fetch students for that class
   useEffect(() => {
-    if (formData.classId) {
-      loadStudents(formData.classId)
+    if (enterFormData.classId) {
+      loadStudents(enterFormData.classId)
     } else {
       setStudents([])
-      setFormData(prev => ({ ...prev, studentId: '' }))
+      setEnterFormData(prev => ({ ...prev, studentId: '' }))
     }
-  }, [formData.classId])
+  }, [enterFormData.classId])
+
+  // When filters change in View tab, fetch results
+  useEffect(() => {
+    if (activeTab === 'view') {
+      loadResults()
+    }
+  }, [viewFilters.classId, viewFilters.term, viewFilters.session, activeTab])
 
   async function loadInitialData() {
     try {
@@ -60,121 +85,298 @@ export default function TeacherResults() {
     }
   }
 
-  async function handleSubmit(e) {
+  async function loadResults() {
+    setViewLoading(true)
+    try {
+      const data = await fetchAllResults({
+        classId: viewFilters.classId,
+        term: viewFilters.term,
+        session: viewFilters.session
+      })
+      setResults(data)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setViewLoading(false)
+    }
+  }
+
+  async function handleEnterSubmit(e) {
     e.preventDefault()
     
-    if (!formData.studentId || !formData.subjectId || !formData.score || !formData.term || !formData.session) {
-      return setError('All fields are required.')
+    if (!enterFormData.studentId || !enterFormData.subjectId || !enterFormData.score || !enterFormData.term || !enterFormData.session) {
+      return setEnterError('All fields are required.')
     }
 
-    const scoreNum = parseFloat(formData.score)
+    const scoreNum = parseFloat(enterFormData.score)
     if (isNaN(scoreNum) || scoreNum < 0 || scoreNum > 100) {
-      return setError('Score must be a number between 0 and 100.')
+      return setEnterError('Score must be a number between 0 and 100.')
     }
 
-    setLoading(true)
-    setError('')
+    setEnterLoading(true)
+    setEnterError('')
 
     try {
-      await saveResult(formData)
+      await saveResult(enterFormData)
       showToast('Result saved successfully!', 'success')
-      // Clear score for rapid entry, but keep the rest of the form context
-      setFormData(prev => ({ ...prev, score: '' }))
+      // Clear score for rapid entry
+      setEnterFormData(prev => ({ ...prev, score: '' }))
     } catch (err) {
-      setError(err.message)
+      setEnterError(err.message)
     } finally {
-      setLoading(false)
+      setEnterLoading(false)
+    }
+  }
+
+  async function handleEditSubmit(e) {
+    e.preventDefault()
+    const scoreNum = parseFloat(editScore)
+    if (isNaN(scoreNum) || scoreNum < 0 || scoreNum > 100) {
+      return setEditError('Score must be a number between 0 and 100.')
+    }
+
+    setEditLoading(true)
+    setEditError('')
+
+    try {
+      await updateResultScore(editingResult.id, editScore)
+      showToast('Score updated successfully!', 'success')
+      setEditingResult(null)
+      loadResults()
+    } catch (err) {
+      setEditError(err.message)
+    } finally {
+      setEditLoading(false)
     }
   }
 
   return (
-    <Layout role="teacher" sidebar pageTitle="Enter Results">
+    <Layout role="teacher" sidebar pageTitle="Manage Results">
       
-      <div className="page-header">
-        <h2 className="page-title">Record Results</h2>
-        <p className="page-subtitle">Enter scores for students in your assigned classes.</p>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
+        <div>
+          <h2 className="page-title">Manage Results</h2>
+          <p className="page-subtitle">Enter new scores or edit existing ones.</p>
+        </div>
+        
+        {/* Tab Toggle */}
+        <div style={{ display: 'flex', background: 'var(--bg-card)', padding: 4, borderRadius: 8, border: '1px solid var(--border-color)' }}>
+          <button 
+            className={`btn btn--sm ${activeTab === 'enter' ? 'btn--primary' : 'btn--outline'}`}
+            style={activeTab === 'enter' ? {} : { border: 'none' }}
+            onClick={() => setActiveTab('enter')}
+          >
+            Enter Results
+          </button>
+          <button 
+            className={`btn btn--sm ${activeTab === 'view' ? 'btn--primary' : 'btn--outline'}`}
+            style={activeTab === 'view' ? {} : { border: 'none' }}
+            onClick={() => setActiveTab('view')}
+          >
+            View/Edit Results
+          </button>
+        </div>
       </div>
 
-      <Card style={{ maxWidth: 600, margin: '0 auto' }}>
-        <Card.Header>
-          <Card.Title>Result Entry Form</Card.Title>
-        </Card.Header>
-        <Card.Body>
-          {error && <div className="alert alert--warning" style={{ marginBottom: 24 }}>{error}</div>}
-          
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {activeTab === 'enter' && (
+        <Card style={{ maxWidth: 600, margin: '0 auto' }}>
+          <Card.Header>
+            <Card.Title>Result Entry Form</Card.Title>
+          </Card.Header>
+          <Card.Body>
+            {enterError && <div className="alert alert--warning" style={{ marginBottom: 24 }}>{enterError}</div>}
             
-            {/* Step 1: Context */}
-            <div style={{ display: 'flex', gap: 16 }}>
-              <div style={{ flex: 1 }}>
-                <Input 
-                  label="Session" 
-                  type="select" 
-                  options={[{value: '2025/2026', label: '2025/2026'}, {value: '2026/2027', label: '2026/2027'}]}
-                  value={formData.session}
-                  onChange={e => setFormData({...formData, session: e.target.value})}
-                />
+            <form onSubmit={handleEnterSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              
+              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                <div style={{ flex: '1 1 200px' }}>
+                  <Input 
+                    label="Session" 
+                    type="select" 
+                    options={[{value: '2025/2026', label: '2025/2026'}, {value: '2026/2027', label: '2026/2027'}]}
+                    value={enterFormData.session}
+                    onChange={e => setEnterFormData({...enterFormData, session: e.target.value})}
+                  />
+                </div>
+                <div style={{ flex: '1 1 200px' }}>
+                  <Input 
+                    label="Term" 
+                    type="select" 
+                    options={[{value: 'First Term', label: 'First Term'}, {value: 'Second Term', label: 'Second Term'}, {value: 'Third Term', label: 'Third Term'}]}
+                    value={enterFormData.term}
+                    onChange={e => setEnterFormData({...enterFormData, term: e.target.value})}
+                  />
+                </div>
               </div>
-              <div style={{ flex: 1 }}>
-                <Input 
-                  label="Term" 
-                  type="select" 
-                  options={[{value: 'First Term', label: 'First Term'}, {value: 'Second Term', label: 'Second Term'}, {value: 'Third Term', label: 'Third Term'}]}
-                  value={formData.term}
-                  onChange={e => setFormData({...formData, term: e.target.value})}
-                />
+
+              <Input 
+                label="Select Assigned Class" 
+                type="select" 
+                options={[{value: '', label: '-- Choose a class --'}, ...classes.map(c => ({value: c.id, label: c.name}))]}
+                value={enterFormData.classId}
+                onChange={e => setEnterFormData({...enterFormData, classId: e.target.value})}
+              />
+
+              <Input 
+                label="Select Student" 
+                type="select" 
+                options={[{value: '', label: enterFormData.classId ? '-- Choose a student --' : 'Select a class first'}, ...students.map(s => ({value: s.id, label: `${s.full_name} (${s.examination_number})`}))]}
+                value={enterFormData.studentId}
+                onChange={e => setEnterFormData({...enterFormData, studentId: e.target.value})}
+                disabled={!enterFormData.classId}
+              />
+
+              <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                <div style={{ flex: '2 1 200px' }}>
+                  <Input 
+                    label="Select Subject" 
+                    type="select" 
+                    options={[{value: '', label: '-- Choose a subject --'}, ...subjects.map(s => ({value: s.id, label: s.name}))]}
+                    value={enterFormData.subjectId}
+                    onChange={e => setEnterFormData({...enterFormData, subjectId: e.target.value})}
+                  />
+                </div>
+                <div style={{ flex: '1 1 100px' }}>
+                  <Input 
+                    label="Score (0-100)" 
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={enterFormData.score}
+                    onChange={e => setEnterFormData({...enterFormData, score: e.target.value})}
+                    placeholder="e.g. 85"
+                  />
+                </div>
               </div>
+
+              <Button type="submit" loading={enterLoading} style={{ marginTop: 8 }}>
+                Save Result
+              </Button>
+            </form>
+          </Card.Body>
+        </Card>
+      )}
+
+      {activeTab === 'view' && (
+        <Card>
+          <div style={{ padding: 24, borderBottom: '1px solid var(--border-color)', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <Input 
+                label="Filter by Class" 
+                type="select"
+                options={[{value: '', label: 'All My Classes'}, ...classes.map(c => ({value: c.id, label: c.name}))]}
+                value={viewFilters.classId}
+                onChange={e => setViewFilters({...viewFilters, classId: e.target.value})}
+              />
             </div>
+            <div style={{ flex: 1, minWidth: 150 }}>
+              <Input 
+                label="Filter by Term" 
+                type="select"
+                options={[{value: '', label: 'All Terms'}, {value: 'First Term', label: 'First Term'}, {value: 'Second Term', label: 'Second Term'}, {value: 'Third Term', label: 'Third Term'}]}
+                value={viewFilters.term}
+                onChange={e => setViewFilters({...viewFilters, term: e.target.value})}
+              />
+            </div>
+            <div style={{ flex: 1, minWidth: 150 }}>
+              <Input 
+                label="Filter by Session" 
+                type="select"
+                options={[{value: '', label: 'All Sessions'}, {value: '2025/2026', label: '2025/2026'}, {value: '2026/2027', label: '2026/2027'}]}
+                value={viewFilters.session}
+                onChange={e => setViewFilters({...viewFilters, session: e.target.value})}
+              />
+            </div>
+          </div>
 
-            {/* Step 2: Student */}
-            <Input 
-              label="Select Assigned Class" 
-              type="select" 
-              options={[{value: '', label: '-- Choose a class --'}, ...classes.map(c => ({value: c.id, label: c.name}))]}
-              value={formData.classId}
-              onChange={e => setFormData({...formData, classId: e.target.value})}
-            />
+          <div className="admin-table-wrap" style={{ overflowX: 'auto' }}>
+            <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
+                  <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Student Name</th>
+                  <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Class</th>
+                  <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Subject</th>
+                  <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Term / Session</th>
+                  <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Score</th>
+                  <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)', width: '1%' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {viewLoading ? (
+                  <tr className="admin-table-utility"><td colSpan="6" style={{ padding: 24, textAlign: 'center' }}>Loading...</td></tr>
+                ) : results.length === 0 ? (
+                  <tr className="admin-table-utility">
+                    <td colSpan="6" style={{ padding: 0 }}>
+                      <div className="empty-state">
+                        <div className="empty-state__icon">📝</div>
+                        <h3>No results found</h3>
+                        <p>You haven't recorded any results matching these filters.</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  results.map(r => (
+                    <tr key={r.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                      <td style={{ padding: '12px 16px', fontWeight: 500 }}>
+                        {r.students.full_name}
+                        <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 400 }}>{r.students.examination_number}</div>
+                      </td>
+                      <td style={{ padding: '12px 16px' }}>{r.students.classes.name}</td>
+                      <td style={{ padding: '12px 16px' }}>{r.subjects.name}</td>
+                      <td style={{ padding: '12px 16px' }}>
+                        {r.term}
+                        <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{r.session}</div>
+                      </td>
+                      <td style={{ padding: '12px 16px', fontWeight: 600 }}>{r.score}</td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <Button variant="outline" size="sm" onClick={() => {
+                          setEditingResult(r)
+                          setEditScore(r.score)
+                        }}>Edit Score</Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
 
-            <Input 
-              label="Select Student" 
-              type="select" 
-              options={[{value: '', label: formData.classId ? '-- Choose a student --' : 'Select a class first'}, ...students.map(s => ({value: s.id, label: `${s.full_name} (${s.examination_number})`}))]}
-              value={formData.studentId}
-              onChange={e => setFormData({...formData, studentId: e.target.value})}
-              disabled={!formData.classId}
-            />
-
-            {/* Step 3: Score */}
-            <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end' }}>
-              <div style={{ flex: 2 }}>
-                <Input 
-                  label="Select Subject" 
-                  type="select" 
-                  options={[{value: '', label: '-- Choose a subject --'}, ...subjects.map(s => ({value: s.id, label: s.name}))]}
-                  value={formData.subjectId}
-                  onChange={e => setFormData({...formData, subjectId: e.target.value})}
-                />
+      {/* Edit Score Modal */}
+      {editingResult && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 16 }}>
+          <Card style={{ width: '100%', maxWidth: 400, maxHeight: '90vh', overflowY: 'auto' }}>
+            <Card.Header>
+              <Card.Title>Edit Score</Card.Title>
+            </Card.Header>
+            <Card.Body>
+              {editError && <div className="alert alert--warning" style={{ marginBottom: 16 }}>{editError}</div>}
+              <div style={{ marginBottom: 16, padding: 12, background: 'rgba(0,0,0,0.02)', borderRadius: 8, fontSize: 14, wordBreak: 'break-word' }}>
+                <strong>Student:</strong> {editingResult.students.full_name} <br/>
+                <strong>Subject:</strong> {editingResult.subjects.name} <br/>
+                <strong>Term:</strong> {editingResult.term} ({editingResult.session})
               </div>
-              <div style={{ flex: 1 }}>
+              <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <Input 
-                  label="Score (0-100)" 
+                  label="New Score (0-100)" 
                   type="number"
                   min="0"
                   max="100"
-                  value={formData.score}
-                  onChange={e => setFormData({...formData, score: e.target.value})}
-                  placeholder="e.g. 85"
+                  value={editScore}
+                  onChange={e => setEditScore(e.target.value)}
+                  required
+                  autoFocus
                 />
-              </div>
-            </div>
-
-            <Button type="submit" loading={loading} style={{ marginTop: 8 }}>
-              Save Result
-            </Button>
-
-          </form>
-        </Card.Body>
-      </Card>
+                <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                  <Button type="button" variant="outline" onClick={() => setEditingResult(null)} disabled={editLoading} style={{ flex: 1 }}>Cancel</Button>
+                  <Button type="submit" loading={editLoading} style={{ flex: 1 }}>Update Score</Button>
+                </div>
+              </form>
+            </Card.Body>
+          </Card>
+        </div>
+      )}
 
     </Layout>
   )

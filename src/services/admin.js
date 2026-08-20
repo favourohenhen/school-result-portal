@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import { hashPin } from './auth'
 
@@ -66,10 +67,10 @@ export async function fetchSubjects() {
   return data
 }
 
-export async function createSubject(name) {
+export async function createSubject(name, category = 'Junior Secondary') {
   const { data, error } = await supabase
     .from('subjects')
-    .insert([{ name }])
+    .insert([{ name, category }])
     .select()
     .single()
 
@@ -261,4 +262,41 @@ export async function updateStudent(studentId, studentData) {
   }
   
   return { student: data }
+}
+
+export async function createTeacher({ email, password, fullName }) {
+  // Create a temporary client to sign up the teacher without logging the admin out
+  const tempSupabase = createClient(
+    import.meta.env.VITE_SUPABASE_URL,
+    import.meta.env.VITE_SUPABASE_ANON_KEY,
+    { auth: { persistSession: false, autoRefreshToken: false } }
+  )
+
+  const { data: authData, error: authError } = await tempSupabase.auth.signUp({
+    email,
+    password
+  })
+
+  if (authError) throw new Error(authError.message)
+  if (!authData.user) throw new Error('User creation failed (no user returned).')
+
+  const userId = authData.user.id
+
+  // Insert profile
+  const { error: profileError } = await supabase
+    .from('profiles')
+    .insert([{ user_id: userId, role: 'teacher' }])
+  
+  if (profileError) throw new Error(profileError.message)
+
+  // Insert teacher
+  const { data: teacherData, error: teacherError } = await supabase
+    .from('teachers')
+    .insert([{ user_id: userId, full_name: fullName }])
+    .select()
+    .single()
+
+  if (teacherError) throw new Error(teacherError.message)
+
+  return teacherData
 }

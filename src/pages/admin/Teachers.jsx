@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Layout } from '../../components/Layout'
 import { Card } from '../../components/Card'
 import { Button } from '../../components/Button'
-import { fetchTeachers, fetchClasses, assignTeacherToClasses } from '../../services/admin'
+import { fetchTeachers, fetchClasses, assignTeacherToClasses, createTeacher } from '../../services/admin'
 
 export default function AdminTeachers() {
   const [teachers, setTeachers] = useState([])
@@ -15,6 +15,11 @@ export default function AdminTeachers() {
   
   const [formError, setFormError] = useState('')
   const [formLoading, setFormLoading] = useState(false)
+
+  const [isAdding, setIsAdding] = useState(false)
+  const [newTeacherData, setNewTeacherData] = useState({ fullName: '', email: '', password: '' })
+  const [addError, setAddError] = useState('')
+  const [addLoading, setAddLoading] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -68,13 +73,37 @@ export default function AdminTeachers() {
     }
   }
 
+  function handleAddClick() {
+    setNewTeacherData({ fullName: '', email: '', password: '' })
+    setAddError('')
+    setIsAdding(true)
+  }
+
+  async function handleAddSubmit(e) {
+    e.preventDefault()
+    setAddLoading(true)
+    setAddError('')
+    try {
+      await createTeacher(newTeacherData)
+      setIsAdding(false)
+      loadData()
+    } catch (err) {
+      setAddError(err.message)
+    } finally {
+      setAddLoading(false)
+    }
+  }
+
   return (
     <Layout role="admin" sidebar pageTitle="Manage Teachers">
 
       <Card>
-        <Card.Header>
-          <Card.Title>Registered Teachers</Card.Title>
-          <Card.Subtitle>Assign teachers to specific classes</Card.Subtitle>
+        <Card.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+          <div>
+            <Card.Title>Registered Teachers</Card.Title>
+            <Card.Subtitle>Assign teachers to specific classes</Card.Subtitle>
+          </div>
+          <Button onClick={handleAddClick}>+ Add Teacher</Button>
         </Card.Header>
         <div className="admin-table-wrap" style={{ overflowX: 'auto' }}>
           <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -103,11 +132,11 @@ export default function AdminTeachers() {
                   <tr key={t.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                     <td data-label="Teacher Name" style={{ padding: '12px 16px', fontWeight: 600 }}>{t.full_name}</td>
                     <td data-label="Assigned Classes" style={{ padding: '12px 16px' }}>
-                      {!t.teacher_assignments?.length ? (
+                      {!t.teacher_class_assignments?.length ? (
                         <span style={{ color: 'var(--text-secondary)' }}>None</span>
                       ) : (
                         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                          {t.teacher_assignments.map(a => (
+                          {t.teacher_class_assignments.map(a => (
                             <span key={a.classes.id} style={{ 
                               background: 'var(--color-bg)', 
                               padding: '2px 8px', 
@@ -134,6 +163,58 @@ export default function AdminTeachers() {
           </table>
         </div>
       </Card>
+
+      {/* Add Teacher Modal */}
+      {isAdding && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 16 }}>
+          <Card style={{ width: '100%', maxWidth: 400, maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}>
+            <Card.Header>
+              <Card.Title>Add Teacher</Card.Title>
+              <Card.Subtitle>Create a new teacher account</Card.Subtitle>
+            </Card.Header>
+            <Card.Body style={{ overflowY: 'auto' }}>
+              {addError && <div className="alert alert--warning" style={{ marginBottom: 16 }}>{addError}</div>}
+              <form onSubmit={handleAddSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div className="form-group">
+                  <label className="form-label">Full Name</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={newTeacherData.fullName}
+                    onChange={e => setNewTeacherData({ ...newTeacherData, fullName: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Email Address</label>
+                  <input
+                    type="email"
+                    className="form-input"
+                    value={newTeacherData.email}
+                    onChange={e => setNewTeacherData({ ...newTeacherData, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Password</label>
+                  <input
+                    type="password"
+                    className="form-input"
+                    value={newTeacherData.password}
+                    onChange={e => setNewTeacherData({ ...newTeacherData, password: e.target.value })}
+                    required
+                    minLength={6}
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+                  <Button type="button" variant="outline" onClick={() => setIsAdding(false)} disabled={addLoading} style={{ flex: 1 }}>Cancel</Button>
+                  <Button type="submit" loading={addLoading} style={{ flex: 1 }}>Create Teacher</Button>
+                </div>
+              </form>
+            </Card.Body>
+          </Card>
+        </div>
+      )}
 
       {/* Assign Modal */}
       {isAssigning && currentTeacher && (
