@@ -85,7 +85,7 @@ export default function RoleSelection() {
       <div style={{ maxWidth: '900px', width: '100%', padding: '20px', zIndex: 1 }}>
         <div className="role-header">
           <div className="role-header__logo" aria-hidden="true">🏫</div>
-          <h1 className="role-header__title">School Result Portal</h1>
+          <h1 className="role-header__title">Result Hub</h1>
           <p className="role-header__subtitle">Select your portal to continue securely</p>
         </div>
 

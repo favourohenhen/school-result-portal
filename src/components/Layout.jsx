@@ -67,7 +67,7 @@ function SidebarLayout({ children, role, pageTitle }) {
         <div className="sidebar__brand">
           <div className="sidebar__logo" aria-hidden="true">📚</div>
           <div>
-            <div className="sidebar__portal-name">Result Portal</div>
+            <div className="sidebar__portal-name">Result Hub</div>
             <div className="sidebar__portal-sub">{ROLE_LABEL[role]} Panel</div>
           </div>
         </div>
@@ -140,7 +140,7 @@ function SidebarLayout({ children, role, pageTitle }) {
               ←
             </button>
             <span className="sidebar-topbar__title">
-              {pageTitle || 'School Result Portal'}
+              {pageTitle || 'Result Hub'}
             </span>
           </div>
           <span className="badge badge--primary">{ROLE_LABEL[role]}</span>
@@ -194,7 +194,7 @@ function HeaderLayout({ children, role }) {
               </button>
               <Link to="/student/dashboard" className="site-header__brand" aria-label="School Result Portal">
                 <div className="site-header__logo" aria-hidden="true">📚</div>
-                <span className="site-header__name">School Result Portal</span>
+                <span className="site-header__name">Result Hub</span>
               </Link>
             </div>
 

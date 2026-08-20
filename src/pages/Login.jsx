@@ -44,7 +44,7 @@ export default function Login() {
 
         <div className="login-brand">
           <div className="login-brand__logo" aria-hidden="true">🎓</div>
-          <h1 className="login-brand__title">School Result Portal</h1>
+          <h1 className="login-brand__title">Result Hub</h1>
           <p className="login-brand__subtitle">Student Portal — View your results</p>
         </div>
 

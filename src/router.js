@@ -67,7 +67,7 @@ function renderRoute() {
 
   // Update document title
   const label = route.path.replace('/', '').replace(/\//g, ' › ').replace(/\b\w/g, c => c.toUpperCase());
-  document.title = `${label || 'Login'} — School Result Portal`;
+  document.title = `${label || 'Login'} — Result Hub`;
 }
 
 /* ── Public API ───────────────────────────────────────────────── */
