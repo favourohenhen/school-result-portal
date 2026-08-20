@@ -153,7 +153,7 @@ export default function TeacherResults() {
   return (
     <Layout role="teacher" sidebar pageTitle="Manage Results">
 
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
+      <div className="page-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '16px', marginBottom: '24px' }}>
         <div>
           <h2 className="page-title">Manage Results</h2>
           <p className="page-subtitle">Enter new scores or edit existing ones.</p>
