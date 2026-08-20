@@ -10,14 +10,14 @@ export default function TeacherClasses() {
   const navigate = useNavigate()
   const location = useLocation()
   const { session } = useAuth()
-  
+
   // Parse classId from URL query string
   const queryParams = new URLSearchParams(location.search)
   const initialClassId = queryParams.get('classId')
-  
+
   const [classes, setClasses] = useState([])
   const [loadingClasses, setLoadingClasses] = useState(true)
-  
+
   const [selectedClassId, setSelectedClassId] = useState(initialClassId || '')
   const [students, setStudents] = useState([])
   const [resultsDict, setResultsDict] = useState({}) // student_id -> count of results
@@ -50,7 +50,7 @@ export default function TeacherClasses() {
     try {
       const data = await fetchAssignedClasses()
       setClasses(data)
-      
+
       // If no class is selected and they have classes, select the first one automatically
       if (!initialClassId && data.length > 0) {
         setSelectedClassId(data[0].id)
@@ -69,7 +69,7 @@ export default function TeacherClasses() {
         fetchStudentsByClass(classId),
         fetchClassResults(classId, sessionYear, term)
       ])
-      
+
       setStudents(studentsData)
 
       const dict = {}
@@ -98,31 +98,31 @@ export default function TeacherClasses() {
 
       <div style={{ display: 'flex', gap: 16, marginBottom: 24, alignItems: 'flex-end', flexWrap: 'wrap' }}>
         <div style={{ flex: '1 1 200px' }}>
-          <Input 
-            label="Select Class" 
-            type="select" 
-            options={[{value: '', label: '-- Select a class --'}, ...classes.map(c => ({value: c.id, label: c.name}))]}
+          <Input
+            label="Select Class"
+            type="select"
+            options={[{ value: '', label: '-- Select a class --' }, ...classes.map(c => ({ value: c.id, label: c.name }))]}
             value={selectedClassId}
             onChange={e => setSelectedClassId(e.target.value)}
             disabled={loadingClasses}
           />
         </div>
         <div style={{ flex: '0 1 200px' }}>
-          <Input 
-            label="Session" 
-            type="select" 
-            options={[{value: '2025/2026', label: '2025/2026'}, {value: '2026/2027', label: '2026/2027'}]}
+          <Input
+            label="Session"
+            type="select"
+            options={[{ value: '2025/2026', label: '2025/2026' }, { value: '2026/2027', label: '2026/2027' }]}
             value={filters.session}
-            onChange={e => setFilters({...filters, session: e.target.value})}
+            onChange={e => setFilters({ ...filters, session: e.target.value })}
           />
         </div>
         <div style={{ flex: '0 1 200px' }}>
-          <Input 
-            label="Term" 
-            type="select" 
-            options={[{value: 'First Term', label: 'First Term'}, {value: 'Second Term', label: 'Second Term'}, {value: 'Third Term', label: 'Third Term'}]}
+          <Input
+            label="Term"
+            type="select"
+            options={[{ value: 'First Term', label: 'First Term' }, { value: 'Second Term', label: 'Second Term' }, { value: 'Third Term', label: 'Third Term' }]}
             value={filters.term}
-            onChange={e => setFilters({...filters, term: e.target.value})}
+            onChange={e => setFilters({ ...filters, term: e.target.value })}
           />
         </div>
       </div>

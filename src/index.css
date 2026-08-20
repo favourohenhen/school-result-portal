@@ -610,10 +610,20 @@ h6 {
 
 /* Edit Score Modal Desktop */
 .edit-modal-overlay {
-  position: fixed; inset: 0; background-color: rgba(0,0,0,0.5);
-  display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
 }
-.edit-modal-card { width: 100%; max-width: 600px; }
+
+.edit-modal-card {
+  width: 100%;
+  max-width: 600px;
+}
 
 /* ----------------------------------------------------------------
    7. INPUT / FORM
@@ -1515,7 +1525,7 @@ h6 {
   box-sizing: border-box;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1024px) {
 
   /* Layout Padding */
   .sidebar-main__page {
@@ -1544,7 +1554,79 @@ h6 {
     align-items: stretch;
   }
 
-  /* Removed responsive tables and filters to 1024px block below */
+  /* Filter Bar Mobile */
+  .results-filter-bar {
+    flex-direction: column;
+  }
+
+  .results-filter-bar>div {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Edit Modal Mobile Fix: Removed align-items: flex-end to keep it centered on all devices */
+
+  /* Responsive Tables as Cards */
+  .admin-table thead {
+    display: none;
+  }
+
+  .admin-table,
+  .admin-table tbody,
+  .admin-table tr,
+  .admin-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-table tr {
+    margin-bottom: var(--sp-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-md);
+    background: var(--color-surface);
+  }
+
+  .admin-table tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .admin-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-3) var(--sp-4) !important;
+    border-bottom: 1px solid var(--color-bg-subtle) !important;
+    text-align: right;
+  }
+
+  .admin-table td:last-child {
+    border-bottom: none !important;
+    justify-content: center;
+    background: var(--color-surface-raised);
+    padding: var(--sp-4) !important;
+  }
+
+  .admin-table td:last-child::before {
+    display: none;
+  }
+
+  .admin-table td:last-child button,
+  .admin-table td:last-child .btn {
+    width: 100%;
+  }
+
+  .admin-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    text-align: left;
+  }
+
+  .admin-table td>div {
+    text-align: right;
+  }
 
   .modal {
     padding: var(--sp-5);
@@ -1612,14 +1694,30 @@ h6 {
   }
 
   /* Global Overflow Protection for small devices (320px) */
-  html, body { overflow-x: hidden; width: 100%; position: relative; }
-  .table { min-width: 0 !important; }
-  .admin-table td, .admin-table th { 
-    white-space: normal !important; 
-    min-width: 0 !important; 
+  html,
+  body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
   }
-  [style*="min-width"] { min-width: 0 !important; }
-  .search-wrapper { min-width: 0 !important; }
+
+  .table {
+    min-width: 0 !important;
+  }
+
+  .admin-table td,
+  .admin-table th {
+    white-space: normal !important;
+    min-width: 0 !important;
+  }
+
+  [style*="min-width"] {
+    min-width: 0 !important;
+  }
+
+  .search-wrapper {
+    min-width: 0 !important;
+  }
 
   /* Stacking Utilities */
   .mobile-break {
@@ -1633,50 +1731,10 @@ h6 {
     line-height: 1.2 !important;
   }
 
-}
-
-/* Tablet Stacking Overrides (up to 1024px) */
-@media (max-width: 1024px) {
-  /* Filter Bar Mobile */
-  .results-filter-bar { flex-direction: column; }
-  .results-filter-bar > div { width: 100% !important; min-width: 0 !important; }
-
-  /* Responsive Tables as Cards */
-  .admin-table thead { display: none; }
-  .admin-table, .admin-table tbody, .admin-table tr, .admin-table td { display: block; width: 100%; }
-  .admin-table tr { 
-    margin-bottom: var(--sp-4); 
-    border: 1px solid var(--color-border); 
-    border-radius: var(--r-md); 
-    background: var(--color-surface);
+  .status-badge__sub {
+    font-size: 11px !important;
+    opacity: 0.85;
   }
-  .admin-table tr:last-child { margin-bottom: 0; }
-  .admin-table td { 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; 
-    padding: var(--sp-3) var(--sp-4) !important;
-    border-bottom: 1px solid var(--color-bg-subtle) !important;
-    text-align: right;
-  }
-  .admin-table td:last-child { 
-    border-bottom: none !important; 
-    justify-content: center; 
-    background: var(--color-surface-raised); 
-    padding: var(--sp-4) !important;
-  }
-  .admin-table td:last-child::before { display: none; }
-  .admin-table td:last-child button, .admin-table td:last-child .btn { width: 100%; }
-  
-  .admin-table td::before { 
-    content: attr(data-label); 
-    font-weight: 600; 
-    font-size: var(--text-xs); 
-    color: var(--color-text-secondary); 
-    text-transform: uppercase; 
-    text-align: left;
-  }
-  .admin-table td > div { text-align: right; }
 }
 
 .mobile-break {
