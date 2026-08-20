@@ -259,7 +259,7 @@ export default function TeacherResults() {
 
       {activeTab === 'view' && (
         <Card>
-          <div style={{ padding: 24, borderBottom: '1px solid var(--border-color)', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+          <div className="results-filter-bar" style={{ padding: 24, borderBottom: '1px solid var(--border-color)', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: 200 }}>
               <Input
                 label="Filter by Class"
