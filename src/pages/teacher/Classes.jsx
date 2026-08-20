@@ -135,8 +135,8 @@ export default function TeacherClasses() {
             <p>Please select a class from the dropdown above to view students.</p>
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+          <div className="admin-table-wrap" style={{ overflowX: 'auto' }}>
+            <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'rgba(0,0,0,0.02)' }}>
                   <th style={{ padding: '12px 16px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Student Name</th>
@@ -164,13 +164,13 @@ export default function TeacherClasses() {
 
                     return (
                       <tr key={s.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
-                        <td style={{ padding: '12px 16px', fontWeight: 600 }}>{s.full_name}</td>
-                        <td style={{ padding: '12px 16px', fontFamily: 'monospace', maxWidth: '120px' }}>
+                        <td data-label="Student Name" style={{ padding: '12px 16px', fontWeight: 600 }}>{s.full_name}</td>
+                        <td data-label="Exam No." style={{ padding: '12px 16px', fontFamily: 'monospace', maxWidth: '120px' }}>
                           {s.examination_number.includes('/') ? (
                             <>{s.examination_number.split('/')[0]}/<br className="mobile-break" />{s.examination_number.split('/')[1]}</>
                           ) : s.examination_number}
                         </td>
-                        <td style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
+                        <td data-label="Result Status" style={{ padding: '12px 16px', whiteSpace: 'nowrap', width: '1%' }}>
                           {isRecorded ? (
                             <span className="status-badge status-badge--success">
                               <span className="status-badge__main">✅ Recorded</span>
